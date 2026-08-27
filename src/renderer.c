@@ -1,6 +1,8 @@
 #include "renderer.h"
 
-static void journey_renderer_update_destination(JourneyRenderer *renderer)
+static void journey_renderer_update_destination(
+    JourneyRenderer *renderer
+)
 {
     const int scale_x =
         renderer->window_width / JOURNEY_LOGICAL_WIDTH;
@@ -47,7 +49,11 @@ bool journey_renderer_init(JourneyRenderer *renderer)
 
     if (renderer->window == NULL)
     {
-        SDL_Log("Failed to create window: %s", SDL_GetError());
+        SDL_Log(
+            "Failed to create window: %s",
+            SDL_GetError()
+        );
+
         return false;
     }
 
@@ -58,7 +64,11 @@ bool journey_renderer_init(JourneyRenderer *renderer)
 
     if (renderer->renderer == NULL)
     {
-        SDL_Log("Failed to create renderer: %s", SDL_GetError());
+        SDL_Log(
+            "Failed to create renderer: %s",
+            SDL_GetError()
+        );
+
         journey_renderer_shutdown(renderer);
         return false;
     }
@@ -73,7 +83,11 @@ bool journey_renderer_init(JourneyRenderer *renderer)
 
     if (renderer->render_target == NULL)
     {
-        SDL_Log("Failed to create render target: %s", SDL_GetError());
+        SDL_Log(
+            "Failed to create render target: %s",
+            SDL_GetError()
+        );
+
         journey_renderer_shutdown(renderer);
         return false;
     }
@@ -90,7 +104,8 @@ bool journey_renderer_init(JourneyRenderer *renderer)
 
 void journey_renderer_resize(JourneyRenderer *renderer)
 {
-    if (renderer == NULL || renderer->renderer == NULL)
+    if (renderer == NULL ||
+        renderer->renderer == NULL)
     {
         return;
     }
@@ -107,6 +122,7 @@ void journey_renderer_resize(JourneyRenderer *renderer)
             "Failed to get render output size: %s",
             SDL_GetError()
         );
+
         return;
     }
 
@@ -144,21 +160,33 @@ void journey_renderer_shutdown(JourneyRenderer *renderer)
 
 void journey_renderer_draw_map(
     JourneyRenderer *renderer,
-    const JourneyMap *map
+    const JourneyMap *map,
+    const JourneyCamera *camera
 )
 {
     if (renderer == NULL ||
         renderer->renderer == NULL ||
-        map == NULL)
+        map == NULL ||
+        camera == NULL)
     {
         return;
     }
 
-    const float tile_width =
-        (float)JOURNEY_LOGICAL_WIDTH / (float)map->width;
+    /*
+     * The entire map is 64 x 36 tiles.
+     *
+     * Our logical screen is 320 x 180 pixels,
+     * so each tile is exactly 5 x 5 logical pixels.
+     */
 
-    const float tile_height =
-        (float)JOURNEY_LOGICAL_HEIGHT / (float)map->height;
+    /*
+     * Map tiles are 10 x 10 logical pixels.
+     *
+     * The 64 x 36 map is therefore 640 x 360
+     * logical pixels, while the viewport is 320 x 180.
+     */
+    const float tile_width = 10.0f;
+    const float tile_height = 10.0f;
 
     for (int y = 0; y < map->height; ++y)
     {
@@ -235,9 +263,19 @@ void journey_renderer_draw_map(
                     break;
             }
 
+            /*
+             * Convert map coordinates to logical screen
+             * coordinates, then subtract the camera position.
+             */
+            const float world_x =
+                (float)x * tile_width;
+
+            const float world_y =
+                (float)y * tile_height;
+
             SDL_FRect destination = {
-                (float)x * tile_width,
-                (float)y * tile_height,
+                world_x - camera->x,
+                world_y - camera->y,
                 tile_width,
                 tile_height
             };
@@ -252,36 +290,45 @@ void journey_renderer_draw_map(
 
 void journey_renderer_draw_player(
     JourneyRenderer *renderer,
-    const JourneyPlayer *player
+    const JourneyPlayer *player,
+    const JourneyCamera *camera
 )
 {
     if (renderer == NULL ||
         renderer->renderer == NULL ||
-        player == NULL)
+        player == NULL ||
+        camera == NULL)
     {
         return;
     }
 
-    const float tile_width =
-        (float)JOURNEY_LOGICAL_WIDTH / (float)JOURNEY_MAP_WIDTH;
+    /*
+     * Keep player coordinates consistent with the map.
+     */
+    const float tile_width = 10.0f;
+    const float tile_height = 10.0f;
 
-    const float tile_height =
-        (float)JOURNEY_LOGICAL_HEIGHT / (float)JOURNEY_MAP_HEIGHT;
-
+    /*
+     * Original player proportions.
+     */
     const float player_width = 6.0f;
     const float player_height = 10.0f;
 
     const float tile_x =
-        (float)player->x * tile_width;
+        (float)player->x * tile_width -
+        camera->x;
 
     const float tile_y =
-        (float)player->y * tile_height;
+        (float)player->y * tile_height -
+        camera->y;
 
     const float player_x =
-        tile_x + (tile_width - player_width) / 2.0f;
+        tile_x +
+        (tile_width - player_width) / 2.0f;
 
     const float player_y =
-        tile_y + (tile_height - player_height) / 2.0f;
+        tile_y +
+        (tile_height - player_height) / 2.0f;
 
     /*
      * Dark outline.
@@ -330,7 +377,7 @@ void journey_renderer_draw_player(
     );
 
     /*
-     * Dark head/face detail.
+     * Dark head / face detail.
      */
     SDL_SetRenderDrawColor(
         renderer->renderer,
@@ -355,6 +402,13 @@ void journey_renderer_draw_player(
 
 void journey_renderer_begin(JourneyRenderer *renderer)
 {
+    if (renderer == NULL ||
+        renderer->renderer == NULL ||
+        renderer->render_target == NULL)
+    {
+        return;
+    }
+
     SDL_SetRenderTarget(
         renderer->renderer,
         renderer->render_target
@@ -373,7 +427,17 @@ void journey_renderer_begin(JourneyRenderer *renderer)
 
 void journey_renderer_present(JourneyRenderer *renderer)
 {
-    SDL_SetRenderTarget(renderer->renderer, NULL);
+    if (renderer == NULL ||
+        renderer->renderer == NULL ||
+        renderer->render_target == NULL)
+    {
+        return;
+    }
+
+    SDL_SetRenderTarget(
+        renderer->renderer,
+        NULL
+    );
 
     SDL_SetRenderDrawColor(
         renderer->renderer,

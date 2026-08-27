@@ -1,0 +1,104 @@
+#include <stddef.h>
+
+#include "camera.h"
+
+#define JOURNEY_TILE_WIDTH  10.0f
+#define JOURNEY_TILE_HEIGHT 10.0f
+
+#define JOURNEY_VIEW_WIDTH  320.0f
+#define JOURNEY_VIEW_HEIGHT 180.0f
+
+void journey_camera_init(
+    JourneyCamera *camera,
+    const JourneyPlayer *player
+)
+{
+    if (camera == NULL || player == NULL)
+    {
+        return;
+    }
+
+    /*
+     * Center the camera on the player's tile.
+     */
+    camera->x =
+        (float)player->x * JOURNEY_TILE_WIDTH +
+        JOURNEY_TILE_WIDTH / 2.0f -
+        JOURNEY_VIEW_WIDTH / 2.0f;
+
+    camera->y =
+        (float)player->y * JOURNEY_TILE_HEIGHT +
+        JOURNEY_TILE_HEIGHT / 2.0f -
+        JOURNEY_VIEW_HEIGHT / 2.0f;
+
+    /*
+     * The player starts near the middle of the map,
+     * so these values are already safely inside it.
+     */
+}
+
+void journey_camera_follow(
+    JourneyCamera *camera,
+    const JourneyPlayer *player,
+    const JourneyMap *map
+)
+{
+    if (camera == NULL ||
+        player == NULL ||
+        map == NULL)
+    {
+        return;
+    }
+
+    /*
+     * Center the camera on the player.
+     */
+    camera->x =
+        (float)player->x * JOURNEY_TILE_WIDTH +
+        JOURNEY_TILE_WIDTH / 2.0f -
+        JOURNEY_VIEW_WIDTH / 2.0f;
+
+    camera->y =
+        (float)player->y * JOURNEY_TILE_HEIGHT +
+        JOURNEY_TILE_HEIGHT / 2.0f -
+        JOURNEY_VIEW_HEIGHT / 2.0f;
+
+    /*
+     * Calculate the size of the world in logical pixels.
+     */
+    const float map_width =
+        (float)map->width * JOURNEY_TILE_WIDTH;
+
+    const float map_height =
+        (float)map->height * JOURNEY_TILE_HEIGHT;
+
+    /*
+     * Keep the camera from showing outside the map.
+     */
+    const float max_camera_x =
+        map_width - JOURNEY_VIEW_WIDTH;
+
+    const float max_camera_y =
+        map_height - JOURNEY_VIEW_HEIGHT;
+
+    if (camera->x < 0.0f)
+    {
+        camera->x = 0.0f;
+    }
+
+    if (camera->y < 0.0f)
+    {
+        camera->y = 0.0f;
+    }
+
+    if (camera->x > max_camera_x)
+    {
+        camera->x = max_camera_x;
+    }
+
+    if (camera->y > max_camera_y)
+    {
+        camera->y = max_camera_y;
+    }
+}
+

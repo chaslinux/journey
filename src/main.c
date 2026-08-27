@@ -2,6 +2,7 @@
 
 #include <SDL3/SDL.h>
 
+#include "camera.h"
 #include "input.h"
 #include "map.h"
 #include "player.h"
@@ -40,6 +41,9 @@ int main(void)
     JourneyPlayer player = {0};
     journey_player_init(&player, &map);
 
+    JourneyCamera camera = {0};
+    journey_camera_init(&camera, &player);
+
     JourneyInput input = {0};
     journey_input_init(&input);
 
@@ -64,9 +68,6 @@ int main(void)
             running = false;
         }
 
-        /*
-         * Remember where the player was before movement.
-         */
         const int old_x = player.x;
         const int old_y = player.y;
 
@@ -103,6 +104,15 @@ int main(void)
         }
 
         /*
+         * Update the camera after the player moves.
+         */
+        journey_camera_follow(
+            &camera,
+            &player,
+            &map
+        );
+
+        /*
          * Trigger an interaction only when the player
          * actually enters an interactive tile.
          */
@@ -123,12 +133,14 @@ int main(void)
 
         journey_renderer_draw_map(
             &renderer,
-            &map
+            &map,
+            &camera
         );
 
         journey_renderer_draw_player(
             &renderer,
-            &player
+            &player,
+            &camera
         );
 
         journey_renderer_present(&renderer);

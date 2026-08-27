@@ -20,6 +20,7 @@ add_executable(journey
     src/input.c
     src/map.c
     src/player.c
+    src/camera.c
 )
 
 target_link_libraries(journey

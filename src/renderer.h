@@ -6,6 +6,7 @@
 
 #include "map.h"
 #include "player.h"
+#include "camera.h"
 
 #define JOURNEY_LOGICAL_WIDTH  320
 #define JOURNEY_LOGICAL_HEIGHT 180
@@ -32,12 +33,14 @@ void journey_renderer_present(JourneyRenderer *renderer);
 
 void journey_renderer_draw_map(
     JourneyRenderer *renderer,
-    const JourneyMap *map
+    const JourneyMap *map,
+    const JourneyCamera *camera
 );
 
 void journey_renderer_draw_player(
     JourneyRenderer *renderer,
-    const JourneyPlayer *player
+    const JourneyPlayer *player,
+    const JourneyCamera *camera
 );
 
 #endif

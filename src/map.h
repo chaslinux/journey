@@ -3,8 +3,8 @@
 
 #include <stdbool.h>
 
-#define JOURNEY_MAP_WIDTH  32
-#define JOURNEY_MAP_HEIGHT 18
+#define JOURNEY_MAP_WIDTH  64
+#define JOURNEY_MAP_HEIGHT 36
 
 typedef enum
 {
