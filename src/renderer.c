@@ -142,115 +142,102 @@ void journey_renderer_shutdown(JourneyRenderer *renderer)
     }
 }
 
-void journey_renderer_draw_test_pattern(JourneyRenderer *renderer)
+void journey_renderer_draw_map(
+    JourneyRenderer *renderer,
+    const JourneyMap *map
+)
 {
-    SDL_SetRenderDrawColor(
-        renderer->renderer,
-        40,
-        40,
-        48,
-        255
-    );
-    SDL_RenderClear(renderer->renderer);
+    if (renderer == NULL ||
+        renderer->renderer == NULL ||
+        map == NULL)
+    {
+        return;
+    }
 
-    /* Outer logical-resolution border. */
-    SDL_SetRenderDrawColor(
-        renderer->renderer,
-        180,
-        180,
-        180,
-        255
-    );
+    const float tile_width =
+        (float)JOURNEY_LOGICAL_WIDTH / (float)map->width;
 
-    SDL_FRect border = {
-        0.0f,
-        0.0f,
-        (float)JOURNEY_LOGICAL_WIDTH,
-        (float)JOURNEY_LOGICAL_HEIGHT
-    };
+    const float tile_height =
+        (float)JOURNEY_LOGICAL_HEIGHT / (float)map->height;
 
-    SDL_RenderRect(renderer->renderer, &border);
+    for (int y = 0; y < map->height; ++y)
+    {
+        for (int x = 0; x < map->width; ++x)
+        {
+            const JourneyTile *tile =
+                journey_map_get_tile(map, x, y);
 
-    /* Four corner markers. */
-    SDL_SetRenderDrawColor(
-        renderer->renderer,
-        220,
-        60,
-        60,
-        255
-    );
+            if (tile == NULL)
+            {
+                continue;
+            }
 
-    SDL_FRect top_left = { 5.0f, 5.0f, 20.0f, 20.0f };
-    SDL_RenderFillRect(renderer->renderer, &top_left);
+            switch (tile->type)
+            {
+                case JOURNEY_TILE_GRASS:
+                    SDL_SetRenderDrawColor(
+                        renderer->renderer,
+                        70,
+                        140,
+                        70,
+                        255
+                    );
+                    break;
 
-    SDL_SetRenderDrawColor(
-        renderer->renderer,
-        60,
-        220,
-        60,
-        255
-    );
+                case JOURNEY_TILE_WATER:
+                    SDL_SetRenderDrawColor(
+                        renderer->renderer,
+                        50,
+                        100,
+                        180,
+                        255
+                    );
+                    break;
 
-    SDL_FRect top_right = {
-        295.0f,
-        5.0f,
-        20.0f,
-        20.0f
-    };
+                case JOURNEY_TILE_FOREST:
+                    SDL_SetRenderDrawColor(
+                        renderer->renderer,
+                        35,
+                        80,
+                        45,
+                        255
+                    );
+                    break;
 
-    SDL_RenderFillRect(renderer->renderer, &top_right);
+                case JOURNEY_TILE_STONE:
+                    SDL_SetRenderDrawColor(
+                        renderer->renderer,
+                        130,
+                        130,
+                        130,
+                        255
+                    );
+                    break;
 
-    SDL_SetRenderDrawColor(
-        renderer->renderer,
-        60,
-        120,
-        220,
-        255
-    );
+                default:
+                    SDL_SetRenderDrawColor(
+                        renderer->renderer,
+                        255,
+                        0,
+                        255,
+                        255
+                    );
+                    break;
+            }
 
-    SDL_FRect bottom_left = {
-        5.0f,
-        155.0f,
-        20.0f,
-        20.0f
-    };
+            SDL_FRect destination = {
+                (float)x * tile_width,
+                (float)y * tile_height,
+                tile_width,
+                tile_height
+            };
 
-    SDL_RenderFillRect(renderer->renderer, &bottom_left);
-
-    SDL_SetRenderDrawColor(
-        renderer->renderer,
-        220,
-        200,
-        60,
-        255
-    );
-
-    SDL_FRect bottom_right = {
-        295.0f,
-        155.0f,
-        20.0f,
-        20.0f
-    };
-
-    SDL_RenderFillRect(renderer->renderer, &bottom_right);
-
-    /* Center marker. */
-    SDL_SetRenderDrawColor(
-        renderer->renderer,
-        220,
-        80,
-        220,
-        255
-    );
-
-    SDL_FRect center = {
-        155.0f,
-        85.0f,
-        10.0f,
-        10.0f
-    };
-
-    SDL_RenderFillRect(renderer->renderer, &center);
+            SDL_RenderFillRect(
+                renderer->renderer,
+                &destination
+            );
+        }
+    }
 }
 
 void journey_renderer_begin(JourneyRenderer *renderer)

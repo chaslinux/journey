@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <SDL3/SDL.h>
 
+#include "map.h"
+
 #define JOURNEY_LOGICAL_WIDTH  320
 #define JOURNEY_LOGICAL_HEIGHT 180
 
@@ -27,7 +29,10 @@ void journey_renderer_resize(JourneyRenderer *renderer);
 void journey_renderer_begin(JourneyRenderer *renderer);
 void journey_renderer_present(JourneyRenderer *renderer);
 
-void journey_renderer_draw_test_pattern(JourneyRenderer *renderer);
+void journey_renderer_draw_map(
+    JourneyRenderer *renderer,
+    const JourneyMap *map
+);
 
 #endif
 

@@ -2,6 +2,7 @@
 #include <SDL3/SDL.h>
 
 #include "input.h"
+#include "map.h"
 #include "renderer.h"
 
 int main(void)
@@ -33,6 +34,9 @@ int main(void)
 
     JourneyInput input = {0};
     journey_input_init(&input);
+
+    JourneyMap map = {0};
+    journey_map_init(&map);
 
     bool running = true;
 
@@ -94,7 +98,7 @@ int main(void)
 
         journey_renderer_begin(&renderer);
 
-        journey_renderer_draw_test_pattern(&renderer);
+        journey_renderer_draw_map(&renderer, &map);
 
         journey_renderer_present(&renderer);
     }
