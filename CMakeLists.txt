@@ -18,6 +18,7 @@ add_executable(journey
     src/main.c
     src/renderer.c
     src/input.c
+    src/map.c
 )
 
 target_link_libraries(journey
