@@ -37,8 +37,8 @@ void journey_player_init(
     /*
      * Start on the stone path.
      */
-    player->x = 16;
-    player->y = 12;
+    player->x = 60;
+    player->y = 34;
 }
 
 void journey_player_move_up(
