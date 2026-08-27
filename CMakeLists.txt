@@ -17,6 +17,7 @@ add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 add_executable(journey
     src/main.c
     src/renderer.c
+    src/input.c
 )
 
 target_link_libraries(journey

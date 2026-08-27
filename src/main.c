@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <SDL3/SDL.h>
 
+#include "input.h"
 #include "renderer.h"
 
 int main(void)
@@ -30,6 +31,9 @@ int main(void)
         return 1;
     }
 
+    JourneyInput input = {0};
+    journey_input_init(&input);
+
     bool running = true;
 
     while (running)
@@ -38,15 +42,55 @@ int main(void)
 
         while (SDL_PollEvent(&event))
         {
-            if (event.type == SDL_EVENT_QUIT)
-            {
-                running = false;
-            }
-            else if (event.type == SDL_EVENT_WINDOW_RESIZED)
+            journey_input_process_event(&input, &event);
+
+            if (event.type == SDL_EVENT_WINDOW_RESIZED)
             {
                 journey_renderer_resize(&renderer);
             }
         }
+
+        if (input.quit)
+        {
+            running = false;
+        }
+
+        if (input.move_up)
+        {
+            SDL_Log("Action: MOVE UP");
+        }
+
+        if (input.move_down)
+        {
+            SDL_Log("Action: MOVE DOWN");
+        }
+
+        if (input.move_left)
+        {
+            SDL_Log("Action: MOVE LEFT");
+        }
+
+        if (input.move_right)
+        {
+            SDL_Log("Action: MOVE RIGHT");
+        }
+
+        if (input.confirm)
+        {
+            SDL_Log("Action: CONFIRM");
+        }
+
+        if (input.cancel)
+        {
+            SDL_Log("Action: CANCEL");
+        }
+
+        if (input.menu)
+        {
+            SDL_Log("Action: MENU");
+        }
+
+        journey_input_init(&input);
 
         journey_renderer_begin(&renderer);
 
