@@ -1,4 +1,5 @@
 #include <stdbool.h>
+
 #include <SDL3/SDL.h>
 
 #include "input.h"
@@ -63,39 +64,57 @@ int main(void)
             running = false;
         }
 
+        /*
+         * Remember where the player was before movement.
+         */
+        const int old_x = player.x;
+        const int old_y = player.y;
+
         if (input.move_up)
         {
-            journey_player_move_up(&player, &map);
+            journey_player_move_up(
+                &player,
+                &map
+            );
         }
 
         if (input.move_down)
         {
-            journey_player_move_down(&player, &map);
+            journey_player_move_down(
+                &player,
+                &map
+            );
         }
 
         if (input.move_left)
         {
-            journey_player_move_left(&player, &map);
+            journey_player_move_left(
+                &player,
+                &map
+            );
         }
 
         if (input.move_right)
         {
-            journey_player_move_right(&player, &map);
+            journey_player_move_right(
+                &player,
+                &map
+            );
         }
 
-        if (input.confirm)
+        /*
+         * Trigger an interaction only when the player
+         * actually enters an interactive tile.
+         */
+        if (player.x != old_x || player.y != old_y)
         {
-            SDL_Log("Action: CONFIRM");
-        }
-
-        if (input.cancel)
-        {
-            SDL_Log("Action: CANCEL");
-        }
-
-        if (input.menu)
-        {
-            SDL_Log("Action: MENU");
+            if (journey_map_has_interaction(
+                    &map,
+                    player.x,
+                    player.y))
+            {
+                SDL_Log("You discovered an ancient grave.");
+            }
         }
 
         journey_input_init(&input);

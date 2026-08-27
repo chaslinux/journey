@@ -214,6 +214,16 @@ void journey_renderer_draw_map(
                     );
                     break;
 
+                case JOURNEY_TILE_GRAVE:
+                    SDL_SetRenderDrawColor(
+                        renderer->renderer,
+                        100,
+                        70,
+                        100,
+                        255
+                    );
+                    break;
+
                 default:
                     SDL_SetRenderDrawColor(
                         renderer->renderer,
@@ -258,24 +268,88 @@ void journey_renderer_draw_player(
     const float tile_height =
         (float)JOURNEY_LOGICAL_HEIGHT / (float)JOURNEY_MAP_HEIGHT;
 
+    const float player_width = 6.0f;
+    const float player_height = 10.0f;
+
+    const float tile_x =
+        (float)player->x * tile_width;
+
+    const float tile_y =
+        (float)player->y * tile_height;
+
+    const float player_x =
+        tile_x + (tile_width - player_width) / 2.0f;
+
+    const float player_y =
+        tile_y + (tile_height - player_height) / 2.0f;
+
+    /*
+     * Dark outline.
+     */
     SDL_SetRenderDrawColor(
         renderer->renderer,
-        220,
-        220,
-        80,
+        20,
+        20,
+        25,
         255
     );
 
-    SDL_FRect destination = {
-        (float)player->x * tile_width + 2.0f,
-        (float)player->y * tile_height + 2.0f,
-        tile_width - 4.0f,
-        tile_height - 4.0f
+    SDL_FRect outline = {
+        player_x - 1.0f,
+        player_y - 1.0f,
+        player_width + 2.0f,
+        player_height + 2.0f
     };
 
     SDL_RenderFillRect(
         renderer->renderer,
-        &destination
+        &outline
+    );
+
+    /*
+     * Pale character body.
+     */
+    SDL_SetRenderDrawColor(
+        renderer->renderer,
+        220,
+        210,
+        180,
+        255
+    );
+
+    SDL_FRect body = {
+        player_x,
+        player_y,
+        player_width,
+        player_height
+    };
+
+    SDL_RenderFillRect(
+        renderer->renderer,
+        &body
+    );
+
+    /*
+     * Dark head/face detail.
+     */
+    SDL_SetRenderDrawColor(
+        renderer->renderer,
+        40,
+        35,
+        35,
+        255
+    );
+
+    SDL_FRect face = {
+        player_x + 1.0f,
+        player_y + 1.0f,
+        player_width - 2.0f,
+        3.0f
+    };
+
+    SDL_RenderFillRect(
+        renderer->renderer,
+        &face
     );
 }
 
