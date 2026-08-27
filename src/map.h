@@ -11,7 +11,8 @@ typedef enum
     JOURNEY_TILE_GRASS = 0,
     JOURNEY_TILE_WATER,
     JOURNEY_TILE_FOREST,
-    JOURNEY_TILE_STONE
+    JOURNEY_TILE_STONE,
+    JOURNEY_TILE_GRAVE
 } JourneyTileType;
 
 typedef struct
@@ -36,6 +37,12 @@ const JourneyTile *journey_map_get_tile(
 );
 
 bool journey_map_is_walkable(
+    const JourneyMap *map,
+    int x,
+    int y
+);
+
+bool journey_map_has_interaction(
     const JourneyMap *map,
     int x,
     int y

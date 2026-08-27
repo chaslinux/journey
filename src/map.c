@@ -49,6 +49,12 @@ void journey_map_init(JourneyMap *map)
             }
 
             /*
+             * Ancient grave.
+             */
+            map->tiles[20][9].type = JOURNEY_TILE_GRAVE;
+            map->tiles[20][9].walkable = true;
+
+            /*
              * Stone path.
              */
             if (y == 12 && x >= 3 && x <= 28)
@@ -97,5 +103,22 @@ bool journey_map_is_walkable(
     }
 
     return tile->walkable;
+}
+
+bool journey_map_has_interaction(
+    const JourneyMap *map,
+    int x,
+    int y
+)
+{
+    const JourneyTile *tile =
+        journey_map_get_tile(map, x, y);
+
+    if (tile == NULL)
+    {
+        return false;
+    }
+
+    return tile->type == JOURNEY_TILE_GRAVE;
 }
 
