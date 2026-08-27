@@ -16,6 +16,7 @@ add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 # Journey executable.
 add_executable(journey
     src/main.c
+    src/renderer.c
 )
 
 target_link_libraries(journey
