@@ -240,6 +240,45 @@ void journey_renderer_draw_map(
     }
 }
 
+void journey_renderer_draw_player(
+    JourneyRenderer *renderer,
+    const JourneyPlayer *player
+)
+{
+    if (renderer == NULL ||
+        renderer->renderer == NULL ||
+        player == NULL)
+    {
+        return;
+    }
+
+    const float tile_width =
+        (float)JOURNEY_LOGICAL_WIDTH / (float)JOURNEY_MAP_WIDTH;
+
+    const float tile_height =
+        (float)JOURNEY_LOGICAL_HEIGHT / (float)JOURNEY_MAP_HEIGHT;
+
+    SDL_SetRenderDrawColor(
+        renderer->renderer,
+        220,
+        220,
+        80,
+        255
+    );
+
+    SDL_FRect destination = {
+        (float)player->x * tile_width + 2.0f,
+        (float)player->y * tile_height + 2.0f,
+        tile_width - 4.0f,
+        tile_height - 4.0f
+    };
+
+    SDL_RenderFillRect(
+        renderer->renderer,
+        &destination
+    );
+}
+
 void journey_renderer_begin(JourneyRenderer *renderer)
 {
     SDL_SetRenderTarget(

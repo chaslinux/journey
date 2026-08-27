@@ -5,6 +5,7 @@
 #include <SDL3/SDL.h>
 
 #include "map.h"
+#include "player.h"
 
 #define JOURNEY_LOGICAL_WIDTH  320
 #define JOURNEY_LOGICAL_HEIGHT 180
@@ -32,6 +33,11 @@ void journey_renderer_present(JourneyRenderer *renderer);
 void journey_renderer_draw_map(
     JourneyRenderer *renderer,
     const JourneyMap *map
+);
+
+void journey_renderer_draw_player(
+    JourneyRenderer *renderer,
+    const JourneyPlayer *player
 );
 
 #endif

@@ -3,6 +3,7 @@
 
 #include "input.h"
 #include "map.h"
+#include "player.h"
 #include "renderer.h"
 
 int main(void)
@@ -32,11 +33,14 @@ int main(void)
         return 1;
     }
 
-    JourneyInput input = {0};
-    journey_input_init(&input);
-
     JourneyMap map = {0};
     journey_map_init(&map);
+
+    JourneyPlayer player = {0};
+    journey_player_init(&player, &map);
+
+    JourneyInput input = {0};
+    journey_input_init(&input);
 
     bool running = true;
 
@@ -61,22 +65,22 @@ int main(void)
 
         if (input.move_up)
         {
-            SDL_Log("Action: MOVE UP");
+            journey_player_move_up(&player, &map);
         }
 
         if (input.move_down)
         {
-            SDL_Log("Action: MOVE DOWN");
+            journey_player_move_down(&player, &map);
         }
 
         if (input.move_left)
         {
-            SDL_Log("Action: MOVE LEFT");
+            journey_player_move_left(&player, &map);
         }
 
         if (input.move_right)
         {
-            SDL_Log("Action: MOVE RIGHT");
+            journey_player_move_right(&player, &map);
         }
 
         if (input.confirm)
@@ -98,7 +102,15 @@ int main(void)
 
         journey_renderer_begin(&renderer);
 
-        journey_renderer_draw_map(&renderer, &map);
+        journey_renderer_draw_map(
+            &renderer,
+            &map
+        );
+
+        journey_renderer_draw_player(
+            &renderer,
+            &player
+        );
 
         journey_renderer_present(&renderer);
     }
