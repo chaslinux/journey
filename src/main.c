@@ -208,8 +208,16 @@ int main(void)
                 }
                 else if (tile->type == JOURNEY_DUNGEON_CHEST)
                 {
+                    JourneyDungeonTile *chest =
+                        (JourneyDungeonTile *)tile;
+
+                    chest->type =
+                        JOURNEY_DUNGEON_CHEST_OPEN;
+
+                    chest->walkable = true;
+
                     SDL_Log(
-                        "You discover an ancient chest."
+                        "You open the ancient chest."
                     );
                 }
             }

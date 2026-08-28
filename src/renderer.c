@@ -363,6 +363,26 @@ void journey_renderer_draw_dungeon(
                     );
                     break;
 
+                case JOURNEY_DUNGEON_CHEST:
+                    SDL_SetRenderDrawColor(
+                        renderer->renderer,
+                        160,
+                        70,
+                        190,
+                        255
+                    );
+                    break;
+
+                case JOURNEY_DUNGEON_CHEST_OPEN:
+                    SDL_SetRenderDrawColor(
+                        renderer->renderer,
+                        90,
+                        75,
+                        65,
+                        255
+                    );
+                    break;
+
                 default:
                     SDL_SetRenderDrawColor(
                         renderer->renderer,
