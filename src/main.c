@@ -180,6 +180,38 @@ int main(void)
         }
 
         /*
+         * Leave the dungeon when E is pressed
+         * while standing on the dungeon exit.
+         */
+        if (location == JOURNEY_LOCATION_DUNGEON &&
+            input.interact)
+        {
+            const JourneyDungeonTile *tile =
+                journey_dungeon_get_tile(
+                    &dungeon,
+                    player.x,
+                    player.y
+                );
+
+            if (tile != NULL &&
+                tile->type == JOURNEY_DUNGEON_EXIT)
+            {
+                location = JOURNEY_LOCATION_OVERWORLD;
+
+                /*
+                 * Return the player to the dungeon
+                 * entrance on the overworld.
+                 */
+                player.x = 102;
+                player.y = 49;
+
+                SDL_Log(
+                    "You leave the ancient dungeon."
+                );
+            }
+        }
+
+        /*
          * Trigger the grave interaction when the player
          * enters a grave tile.
          */
