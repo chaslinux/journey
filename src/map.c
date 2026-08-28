@@ -181,6 +181,15 @@ void journey_map_init(JourneyMap *map)
 
     map->tiles[35][48].type = JOURNEY_TILE_GRAVE;
     map->tiles[35][48].walkable = true;
+
+    /*
+     * Dungeon entrance.
+     *
+     * The eastern road ends directly beside this
+     * accessible landmark.
+     */
+    map->tiles[102][49].type = JOURNEY_TILE_DUNGEON;
+    map->tiles[102][49].walkable = true;
 }
 
 const JourneyTile *journey_map_get_tile(
@@ -236,6 +245,7 @@ bool journey_map_has_interaction(
         return false;
     }
 
-    return tile->type == JOURNEY_TILE_GRAVE;
+    return tile->type == JOURNEY_TILE_GRAVE ||
+           tile->type == JOURNEY_TILE_DUNGEON;
 }
 

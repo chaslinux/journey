@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 
+#include "dungeon.h"
 #include "map.h"
 
 typedef struct
@@ -34,6 +35,26 @@ void journey_player_move_left(
 void journey_player_move_right(
     JourneyPlayer *player,
     const JourneyMap *map
+);
+
+void journey_player_move_dungeon_up(
+    JourneyPlayer *player,
+    const JourneyDungeon *dungeon
+);
+
+void journey_player_move_dungeon_down(
+    JourneyPlayer *player,
+    const JourneyDungeon *dungeon
+);
+
+void journey_player_move_dungeon_left(
+    JourneyPlayer *player,
+    const JourneyDungeon *dungeon
+);
+
+void journey_player_move_dungeon_right(
+    JourneyPlayer *player,
+    const JourneyDungeon *dungeon
 );
 
 #endif

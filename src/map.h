@@ -12,7 +12,8 @@ typedef enum
     JOURNEY_TILE_WATER,
     JOURNEY_TILE_FOREST,
     JOURNEY_TILE_STONE,
-    JOURNEY_TILE_GRAVE
+    JOURNEY_TILE_GRAVE,
+    JOURNEY_TILE_DUNGEON
 } JourneyTileType;
 
 typedef struct

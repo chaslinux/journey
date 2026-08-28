@@ -1,3 +1,5 @@
+#include <stddef.h>
+
 #include "input.h"
 
 void journey_input_init(JourneyInput *input)
@@ -7,16 +9,12 @@ void journey_input_init(JourneyInput *input)
         return;
     }
 
+    input->quit = false;
     input->move_up = false;
     input->move_down = false;
     input->move_left = false;
     input->move_right = false;
-
-    input->confirm = false;
-    input->cancel = false;
-    input->menu = false;
-
-    input->quit = false;
+    input->interact = false;
 }
 
 void journey_input_process_event(
@@ -45,39 +43,34 @@ void journey_input_process_event(
         return;
     }
 
-    switch (event->key.key)
+    switch (event->key.scancode)
     {
-        case SDLK_UP:
-        case SDLK_W:
+        case SDL_SCANCODE_UP:
+        case SDL_SCANCODE_W:
             input->move_up = true;
             break;
 
-        case SDLK_DOWN:
-        case SDLK_S:
+        case SDL_SCANCODE_DOWN:
+        case SDL_SCANCODE_S:
             input->move_down = true;
             break;
 
-        case SDLK_LEFT:
-        case SDLK_A:
+        case SDL_SCANCODE_LEFT:
+        case SDL_SCANCODE_A:
             input->move_left = true;
             break;
 
-        case SDLK_RIGHT:
-        case SDLK_D:
+        case SDL_SCANCODE_RIGHT:
+        case SDL_SCANCODE_D:
             input->move_right = true;
             break;
 
-        case SDLK_RETURN:
-        case SDLK_SPACE:
-            input->confirm = true;
+        case SDL_SCANCODE_E:
+            input->interact = true;
             break;
 
-        case SDLK_ESCAPE:
-            input->cancel = true;
-            break;
-
-        case SDLK_TAB:
-            input->menu = true;
+        case SDL_SCANCODE_ESCAPE:
+            input->quit = true;
             break;
 
         default:

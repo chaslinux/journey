@@ -3,6 +3,7 @@
 #include <SDL3/SDL.h>
 
 #include "camera.h"
+#include "game.h"
 #include "input.h"
 #include "map.h"
 #include "player.h"
@@ -46,6 +47,9 @@ int main(void)
 
     JourneyInput input = {0};
     journey_input_init(&input);
+
+    JourneyLocation location =
+        JOURNEY_LOCATION_OVERWORLD;
 
     bool running = true;
 
@@ -103,8 +107,56 @@ int main(void)
             );
         }
 
+		/*
+		 * Enter the dungeon when E is pressed
+		 * while standing on the dungeon entrance.
+		 */
+		if (location == JOURNEY_LOCATION_OVERWORLD &&
+			input.interact)
+		{
+			const JourneyTile *tile =
+				journey_map_get_tile(
+				    &map,
+				    player.x,
+				    player.y
+				);
+
+			if (tile != NULL &&
+				tile->type == JOURNEY_TILE_DUNGEON)
+			{
+				location = JOURNEY_LOCATION_DUNGEON;
+
+				SDL_Log(
+				    "You enter the ancient dungeon."
+				);
+			}
+		}
+
+		/*
+		 * Trigger the grave interaction when the player
+		 * enters a grave tile.
+		 */
+		if (location == JOURNEY_LOCATION_OVERWORLD &&
+			(player.x != old_x || player.y != old_y))
+		{
+			const JourneyTile *tile =
+				journey_map_get_tile(
+				    &map,
+				    player.x,
+				    player.y
+				);
+
+			if (tile != NULL &&
+				tile->type == JOURNEY_TILE_GRAVE)
+			{
+				SDL_Log(
+				    "You discovered an ancient grave."
+				);
+			}
+		}
+
         /*
-         * Update the camera after the player moves.
+         * Keep the camera following the player.
          */
         journey_camera_follow(
             &camera,
@@ -112,20 +164,6 @@ int main(void)
             &map
         );
 
-        /*
-         * Trigger an interaction only when the player
-         * actually enters an interactive tile.
-         */
-        if (player.x != old_x || player.y != old_y)
-        {
-            if (journey_map_has_interaction(
-                    &map,
-                    player.x,
-                    player.y))
-            {
-                SDL_Log("You discovered an ancient grave.");
-            }
-        }
 
         journey_input_init(&input);
 

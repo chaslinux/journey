@@ -252,6 +252,16 @@ void journey_renderer_draw_map(
                     );
                     break;
 
+                case JOURNEY_TILE_DUNGEON:
+                    SDL_SetRenderDrawColor(
+                        renderer->renderer,
+                        80,
+                        45,
+                        45,
+                        255
+                    );
+                    break;
+
                 default:
                     SDL_SetRenderDrawColor(
                         renderer->renderer,
