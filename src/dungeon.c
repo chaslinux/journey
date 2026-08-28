@@ -157,6 +157,14 @@ void journey_dungeon_init(
     dungeon->tiles[20][7].walkable = true;
 
     /*
+     * Chest in the eastern room.
+     */
+    dungeon->tiles[25][7].type =
+        JOURNEY_DUNGEON_CHEST;
+
+    dungeon->tiles[25][7].walkable = false;
+
+    /*
      * Southern interior wall.
      *
      * This creates a smaller southern chamber.
@@ -226,6 +234,82 @@ bool journey_dungeon_is_walkable(
     return tile->walkable;
 }
 
+const JourneyDungeonTile *journey_dungeon_get_interaction(
+    const JourneyDungeon *dungeon,
+    int x,
+    int y
+)
+{
+    const JourneyDungeonTile *tile =
+        journey_dungeon_get_tile(
+            dungeon,
+            x,
+            y
+        );
+
+    if (tile == NULL)
+    {
+        return NULL;
+    }
+
+    if (tile->type == JOURNEY_DUNGEON_EXIT)
+    {
+        return tile;
+    }
+
+    const JourneyDungeonTile *chest =
+        journey_dungeon_get_tile(
+            dungeon,
+            x + 1,
+            y
+        );
+
+    if (chest != NULL &&
+        chest->type == JOURNEY_DUNGEON_CHEST)
+    {
+        return chest;
+    }
+
+    chest = journey_dungeon_get_tile(
+        dungeon,
+        x - 1,
+        y
+    );
+
+    if (chest != NULL &&
+        chest->type == JOURNEY_DUNGEON_CHEST)
+    {
+        return chest;
+    }
+
+    chest = journey_dungeon_get_tile(
+        dungeon,
+        x,
+        y + 1
+    );
+
+    if (chest != NULL &&
+        chest->type == JOURNEY_DUNGEON_CHEST)
+    {
+        return chest;
+    }
+
+    chest = journey_dungeon_get_tile(
+        dungeon,
+        x,
+        y - 1
+    );
+
+    if (chest != NULL &&
+        chest->type == JOURNEY_DUNGEON_CHEST)
+    {
+        return chest;
+    }
+
+    return NULL;
+}
+
+
 bool journey_dungeon_has_interaction(
     const JourneyDungeon *dungeon,
     int x,
@@ -244,6 +328,67 @@ bool journey_dungeon_has_interaction(
         return false;
     }
 
-    return tile->type == JOURNEY_DUNGEON_EXIT;
+    if (tile->type == JOURNEY_DUNGEON_EXIT)
+    {
+        return true;
+    }
+
+    if (journey_dungeon_get_tile(
+            dungeon,
+            x + 1,
+            y
+        ) != NULL &&
+        journey_dungeon_get_tile(
+            dungeon,
+            x + 1,
+            y
+        )->type == JOURNEY_DUNGEON_CHEST)
+    {
+        return true;
+    }
+
+    if (journey_dungeon_get_tile(
+            dungeon,
+            x - 1,
+            y
+        ) != NULL &&
+        journey_dungeon_get_tile(
+            dungeon,
+            x - 1,
+            y
+        )->type == JOURNEY_DUNGEON_CHEST)
+    {
+        return true;
+    }
+
+    if (journey_dungeon_get_tile(
+            dungeon,
+            x,
+            y + 1
+        ) != NULL &&
+        journey_dungeon_get_tile(
+            dungeon,
+            x,
+            y + 1
+        )->type == JOURNEY_DUNGEON_CHEST)
+    {
+        return true;
+    }
+
+    if (journey_dungeon_get_tile(
+            dungeon,
+            x,
+            y - 1
+        ) != NULL &&
+        journey_dungeon_get_tile(
+            dungeon,
+            x,
+            y - 1
+        )->type == JOURNEY_DUNGEON_CHEST)
+    {
+        return true;
+    }
+
+    return false;
 }
 

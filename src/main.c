@@ -180,29 +180,38 @@ int main(void)
         }
 
         /*
-         * Leave the dungeon when E is pressed
-         * while standing on the dungeon exit.
+         * Interact with the dungeon exit or an
+         * adjacent chest when E is pressed.
          */
         if (location == JOURNEY_LOCATION_DUNGEON &&
             input.interact)
         {
-            if (journey_dungeon_has_interaction(
+            const JourneyDungeonTile *tile =
+                journey_dungeon_get_interaction(
                     &dungeon,
                     player.x,
-                    player.y))
-            {
-                location = JOURNEY_LOCATION_OVERWORLD;
-
-                /*
-                 * Return the player to the dungeon
-                 * entrance on the overworld.
-                 */
-                player.x = 102;
-                player.y = 49;
-
-                SDL_Log(
-                    "You leave the ancient dungeon."
+                    player.y
                 );
+
+            if (tile != NULL)
+            {
+                if (tile->type == JOURNEY_DUNGEON_EXIT)
+                {
+                    location = JOURNEY_LOCATION_OVERWORLD;
+
+                    player.x = 102;
+                    player.y = 49;
+
+                    SDL_Log(
+                        "You exit the ancient dungeon."
+                    );
+                }
+                else if (tile->type == JOURNEY_DUNGEON_CHEST)
+                {
+                    SDL_Log(
+                        "You discover an ancient chest."
+                    );
+                }
             }
         }
 

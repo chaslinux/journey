@@ -10,7 +10,8 @@ typedef enum
 {
     JOURNEY_DUNGEON_FLOOR = 0,
     JOURNEY_DUNGEON_WALL,
-    JOURNEY_DUNGEON_EXIT
+    JOURNEY_DUNGEON_EXIT,
+    JOURNEY_DUNGEON_CHEST
 } JourneyDungeonTileType;
 
 typedef struct
@@ -47,6 +48,12 @@ bool journey_dungeon_is_walkable(
 );
 
 bool journey_dungeon_has_interaction(
+    const JourneyDungeon *dungeon,
+    int x,
+    int y
+);
+
+const JourneyDungeonTile *journey_dungeon_get_interaction(
     const JourneyDungeon *dungeon,
     int x,
     int y
