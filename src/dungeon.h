@@ -46,5 +46,11 @@ bool journey_dungeon_is_walkable(
     int y
 );
 
+bool journey_dungeon_has_interaction(
+    const JourneyDungeon *dungeon,
+    int x,
+    int y
+);
+
 #endif
 

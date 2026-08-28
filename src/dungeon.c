@@ -226,3 +226,24 @@ bool journey_dungeon_is_walkable(
     return tile->walkable;
 }
 
+bool journey_dungeon_has_interaction(
+    const JourneyDungeon *dungeon,
+    int x,
+    int y
+)
+{
+    const JourneyDungeonTile *tile =
+        journey_dungeon_get_tile(
+            dungeon,
+            x,
+            y
+        );
+
+    if (tile == NULL)
+    {
+        return false;
+    }
+
+    return tile->type == JOURNEY_DUNGEON_EXIT;
+}
+

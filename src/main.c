@@ -186,15 +186,10 @@ int main(void)
         if (location == JOURNEY_LOCATION_DUNGEON &&
             input.interact)
         {
-            const JourneyDungeonTile *tile =
-                journey_dungeon_get_tile(
+            if (journey_dungeon_has_interaction(
                     &dungeon,
                     player.x,
-                    player.y
-                );
-
-            if (tile != NULL &&
-                tile->type == JOURNEY_DUNGEON_EXIT)
+                    player.y))
             {
                 location = JOURNEY_LOCATION_OVERWORLD;
 
