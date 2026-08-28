@@ -298,6 +298,103 @@ void journey_renderer_draw_map(
     }
 }
 
+void journey_renderer_draw_dungeon(
+    JourneyRenderer *renderer,
+    const JourneyDungeon *dungeon,
+    const JourneyCamera *camera
+)
+{
+    if (renderer == NULL ||
+        renderer->renderer == NULL ||
+        dungeon == NULL ||
+        camera == NULL)
+    {
+        return;
+    }
+
+    const float tile_width = 10.0f;
+    const float tile_height = 10.0f;
+
+    for (int y = 0; y < dungeon->height; ++y)
+    {
+        for (int x = 0; x < dungeon->width; ++x)
+        {
+            const JourneyDungeonTile *tile =
+                journey_dungeon_get_tile(
+                    dungeon,
+                    x,
+                    y
+                );
+
+            if (tile == NULL)
+            {
+                continue;
+            }
+
+            switch (tile->type)
+            {
+                case JOURNEY_DUNGEON_FLOOR:
+                    SDL_SetRenderDrawColor(
+                        renderer->renderer,
+                        90,
+                        75,
+                        65,
+                        255
+                    );
+                    break;
+
+                case JOURNEY_DUNGEON_WALL:
+                    SDL_SetRenderDrawColor(
+                        renderer->renderer,
+                        45,
+                        35,
+                        35,
+                        255
+                    );
+                    break;
+
+                case JOURNEY_DUNGEON_EXIT:
+                    SDL_SetRenderDrawColor(
+                        renderer->renderer,
+                        120,
+                        80,
+                        45,
+                        255
+                    );
+                    break;
+
+                default:
+                    SDL_SetRenderDrawColor(
+                        renderer->renderer,
+                        255,
+                        0,
+                        255,
+                        255
+                    );
+                    break;
+            }
+
+            const float world_x =
+                (float)x * tile_width;
+
+            const float world_y =
+                (float)y * tile_height;
+
+            SDL_FRect destination = {
+                world_x - camera->x,
+                world_y - camera->y,
+                tile_width,
+                tile_height
+            };
+
+            SDL_RenderFillRect(
+                renderer->renderer,
+                &destination
+            );
+        }
+    }
+}
+
 void journey_renderer_draw_player(
     JourneyRenderer *renderer,
     const JourneyPlayer *player,

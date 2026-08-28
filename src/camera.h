@@ -1,7 +1,6 @@
 #ifndef JOURNEY_CAMERA_H
 #define JOURNEY_CAMERA_H
 
-#include "map.h"
 #include "player.h"
 
 typedef struct
@@ -18,7 +17,8 @@ void journey_camera_init(
 void journey_camera_follow(
     JourneyCamera *camera,
     const JourneyPlayer *player,
-    const JourneyMap *map
+    int map_width,
+    int map_height
 );
 
 #endif

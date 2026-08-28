@@ -31,21 +31,28 @@ void journey_camera_init(
         JOURNEY_TILE_HEIGHT / 2.0f -
         JOURNEY_VIEW_HEIGHT / 2.0f;
 
-    /*
-     * The player starts near the middle of the map,
-     * so these values are already safely inside it.
-     */
+    if (camera->x < 0.0f)
+    {
+        camera->x = 0.0f;
+    }
+
+    if (camera->y < 0.0f)
+    {
+        camera->y = 0.0f;
+    }
 }
 
 void journey_camera_follow(
     JourneyCamera *camera,
     const JourneyPlayer *player,
-    const JourneyMap *map
+    int map_width,
+    int map_height
 )
 {
     if (camera == NULL ||
         player == NULL ||
-        map == NULL)
+        map_width <= 0 ||
+        map_height <= 0)
     {
         return;
     }
@@ -64,22 +71,23 @@ void journey_camera_follow(
         JOURNEY_VIEW_HEIGHT / 2.0f;
 
     /*
-     * Calculate the size of the world in logical pixels.
+     * Calculate the size of the current world
+     * in logical pixels.
      */
-    const float map_width =
-        (float)map->width * JOURNEY_TILE_WIDTH;
+    const float map_pixel_width =
+        (float)map_width * JOURNEY_TILE_WIDTH;
 
-    const float map_height =
-        (float)map->height * JOURNEY_TILE_HEIGHT;
+    const float map_pixel_height =
+        (float)map_height * JOURNEY_TILE_HEIGHT;
 
     /*
-     * Keep the camera from showing outside the map.
+     * Keep the camera inside the current world.
      */
     const float max_camera_x =
-        map_width - JOURNEY_VIEW_WIDTH;
+        map_pixel_width - JOURNEY_VIEW_WIDTH;
 
     const float max_camera_y =
-        map_height - JOURNEY_VIEW_HEIGHT;
+        map_pixel_height - JOURNEY_VIEW_HEIGHT;
 
     if (camera->x < 0.0f)
     {
@@ -93,12 +101,16 @@ void journey_camera_follow(
 
     if (camera->x > max_camera_x)
     {
-        camera->x = max_camera_x;
+        camera->x = max_camera_x > 0.0f
+            ? max_camera_x
+            : 0.0f;
     }
 
     if (camera->y > max_camera_y)
     {
-        camera->y = max_camera_y;
+        camera->y = max_camera_y > 0.0f
+            ? max_camera_y
+            : 0.0f;
     }
 }
 

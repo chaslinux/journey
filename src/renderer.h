@@ -5,6 +5,7 @@
 #include <SDL3/SDL.h>
 
 #include "map.h"
+#include "dungeon.h"
 #include "player.h"
 #include "camera.h"
 
@@ -34,6 +35,12 @@ void journey_renderer_present(JourneyRenderer *renderer);
 void journey_renderer_draw_map(
     JourneyRenderer *renderer,
     const JourneyMap *map,
+    const JourneyCamera *camera
+);
+
+void journey_renderer_draw_dungeon(
+    JourneyRenderer *renderer,
+    const JourneyDungeon *dungeon,
     const JourneyCamera *camera
 );
 

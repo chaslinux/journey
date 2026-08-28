@@ -3,6 +3,7 @@
 #include <SDL3/SDL.h>
 
 #include "camera.h"
+#include "dungeon.h"
 #include "game.h"
 #include "input.h"
 #include "map.h"
@@ -42,6 +43,9 @@ int main(void)
     JourneyPlayer player = {0};
     journey_player_init(&player, &map);
 
+    JourneyDungeon dungeon = {0};
+    journey_dungeon_init(&dungeon);
+
     JourneyCamera camera = {0};
     journey_camera_init(&camera, &player);
 
@@ -75,105 +79,167 @@ int main(void)
         const int old_x = player.x;
         const int old_y = player.y;
 
-        if (input.move_up)
+        /*
+         * Movement depends on the current location.
+         */
+        if (location == JOURNEY_LOCATION_OVERWORLD)
         {
-            journey_player_move_up(
-                &player,
-                &map
-            );
-        }
+            if (input.move_up)
+            {
+                journey_player_move_up(
+                    &player,
+                    &map
+                );
+            }
 
-        if (input.move_down)
+            if (input.move_down)
+            {
+                journey_player_move_down(
+                    &player,
+                    &map
+                );
+            }
+
+            if (input.move_left)
+            {
+                journey_player_move_left(
+                    &player,
+                    &map
+                );
+            }
+
+            if (input.move_right)
+            {
+                journey_player_move_right(
+                    &player,
+                    &map
+                );
+            }
+        }
+        else if (location == JOURNEY_LOCATION_DUNGEON)
         {
-            journey_player_move_down(
-                &player,
-                &map
-            );
+            if (input.move_up)
+            {
+                journey_player_move_dungeon_up(
+                    &player,
+                    &dungeon
+                );
+            }
+
+            if (input.move_down)
+            {
+                journey_player_move_dungeon_down(
+                    &player,
+                    &dungeon
+                );
+            }
+
+            if (input.move_left)
+            {
+                journey_player_move_dungeon_left(
+                    &player,
+                    &dungeon
+                );
+            }
+
+            if (input.move_right)
+            {
+                journey_player_move_dungeon_right(
+                    &player,
+                    &dungeon
+                );
+            }
         }
-
-        if (input.move_left)
-        {
-            journey_player_move_left(
-                &player,
-                &map
-            );
-        }
-
-        if (input.move_right)
-        {
-            journey_player_move_right(
-                &player,
-                &map
-            );
-        }
-
-		/*
-		 * Enter the dungeon when E is pressed
-		 * while standing on the dungeon entrance.
-		 */
-		if (location == JOURNEY_LOCATION_OVERWORLD &&
-			input.interact)
-		{
-			const JourneyTile *tile =
-				journey_map_get_tile(
-				    &map,
-				    player.x,
-				    player.y
-				);
-
-			if (tile != NULL &&
-				tile->type == JOURNEY_TILE_DUNGEON)
-			{
-				location = JOURNEY_LOCATION_DUNGEON;
-
-				SDL_Log(
-				    "You enter the ancient dungeon."
-				);
-			}
-		}
-
-		/*
-		 * Trigger the grave interaction when the player
-		 * enters a grave tile.
-		 */
-		if (location == JOURNEY_LOCATION_OVERWORLD &&
-			(player.x != old_x || player.y != old_y))
-		{
-			const JourneyTile *tile =
-				journey_map_get_tile(
-				    &map,
-				    player.x,
-				    player.y
-				);
-
-			if (tile != NULL &&
-				tile->type == JOURNEY_TILE_GRAVE)
-			{
-				SDL_Log(
-				    "You discovered an ancient grave."
-				);
-			}
-		}
 
         /*
-         * Keep the camera following the player.
+         * Enter the dungeon when E is pressed
+         * while standing on the dungeon entrance.
          */
-        journey_camera_follow(
-            &camera,
-            &player,
-            &map
-        );
+        if (location == JOURNEY_LOCATION_OVERWORLD &&
+            input.interact)
+        {
+            const JourneyTile *tile =
+                journey_map_get_tile(
+                    &map,
+                    player.x,
+                    player.y
+                );
 
+            if (tile != NULL &&
+                tile->type == JOURNEY_TILE_DUNGEON)
+            {
+                location = JOURNEY_LOCATION_DUNGEON;
+
+                player.x = 16;
+                player.y = 21;
+
+                SDL_Log(
+                    "You enter the ancient dungeon."
+                );
+            }
+        }
+
+        /*
+         * Trigger the grave interaction when the player
+         * enters a grave tile.
+         */
+        if (location == JOURNEY_LOCATION_OVERWORLD &&
+            (player.x != old_x || player.y != old_y))
+        {
+            const JourneyTile *tile =
+                journey_map_get_tile(
+                    &map,
+                    player.x,
+                    player.y
+                );
+
+            if (tile != NULL &&
+                tile->type == JOURNEY_TILE_GRAVE)
+            {
+                SDL_Log(
+                    "You discovered an ancient grave."
+                );
+            }
+        }
+
+        if (location == JOURNEY_LOCATION_OVERWORLD)
+        {
+            journey_camera_follow(
+                &camera,
+                &player,
+                map.width,
+                map.height
+            );
+        }
+        else if (location == JOURNEY_LOCATION_DUNGEON)
+        {
+            journey_camera_follow(
+                &camera,
+                &player,
+                dungeon.width,
+                dungeon.height
+            );
+        }
 
         journey_input_init(&input);
-
         journey_renderer_begin(&renderer);
 
-        journey_renderer_draw_map(
-            &renderer,
-            &map,
-            &camera
-        );
+        if (location == JOURNEY_LOCATION_OVERWORLD)
+        {
+            journey_renderer_draw_map(
+                &renderer,
+                &map,
+                &camera
+            );
+        }
+        else if (location == JOURNEY_LOCATION_DUNGEON)
+        {
+            journey_renderer_draw_dungeon(
+                &renderer,
+                &dungeon,
+                &camera
+            );
+        }
 
         journey_renderer_draw_player(
             &renderer,
