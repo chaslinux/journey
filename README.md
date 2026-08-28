@@ -1,6 +1,6 @@
-# Journey — Land of the Undead
+# Journey - Land of the Undead
 
-Journey — Land of the Undead is an open-source, single-player role-playing game written in C for Linux.
+Journey - Land of the Undead is an open-source, single-player role-playing game written in C for Linux.
 
 The game is inspired by classic role-playing games such as Ultima IV, with tactical, turn-based combat and an entirely undead-themed world.
 
@@ -10,15 +10,32 @@ Journey is currently in early engine development.
 
 Completed checkpoints:
 
-- Checkpoint 001 — Initial buildable Journey skeleton
-- Checkpoint 002 — Scalable renderer
-- Checkpoint 003 — Input system
-- Checkpoint 004 — Tile map system
-- Checkpoint 005 — Map rendering
-- Checkpoint 006 — Player movement
-- Checkpoint 007 — Player presentation
-- Checkpoint 008 — Grave interaction
-- Checkpoint 009 — Scrolling camera and expanded world map
+- Checkpoint 001 - Initial buildable Journey skeleton
+- Checkpoint 002 - Scalable renderer
+- Checkpoint 003 - Input system
+- Checkpoint 004 - Tile map system
+- Checkpoint 005 - Map rendering
+- Checkpoint 006 - Player movement
+- Checkpoint 007 - Player presentation
+- Checkpoint 008 - Grave interaction
+- Checkpoint 009 - Scrolling camera and expanded world map
+- Checkpoint 010 - Dungeon entry, dungeon rendering, dungeon movement, collision, and camera
+
+The current prototype contains:
+
+- A 128 x 72 overworld
+- An expanded overworld with forests, water, roads, graves, and a dungeon entrance
+- Player movement and collision on the overworld
+- A scrolling overworld camera
+- Ancient grave interaction
+- Dungeon entry using the E key
+- A 32 x 24 dungeon
+- Dungeon walls and collision
+- Dungeon movement
+- A scrolling dungeon camera
+- Location-based rendering and movement
+
+Towns and settlements have not yet been implemented.
 
 ## Planned Features
 
@@ -36,7 +53,7 @@ Completed checkpoints:
 - Experience and character levels
 - Data-driven monsters, equipment, spells, maps, NPCs, and encounters
 - Pixel-art-inspired graphics
-- 320×180 logical game resolution
+- 320 x 180 logical game resolution
 - Integer scaling to larger 16:9 resolutions
 - Keyboard and controller support
 - Linux support
@@ -58,7 +75,7 @@ The project is intended to remain compatible with Debian-based Linux distributio
 - Build system: CMake
 - Build tool: Ninja
 - Graphics, input, and audio: SDL3
-- Logical resolution: 320×180
+- Logical resolution: 320 x 180
 - Source control: Git
 - Repository hosting: GitHub
 
@@ -70,12 +87,14 @@ The main source code is located in the src directory.
 
 Current source components include:
 
-- camera — world camera and scrolling
-- input — keyboard and controller input
-- map — world map and tile definitions
-- player — player state and movement
-- renderer — graphics rendering
-- main — program entry point and game loop
+- camera - world and dungeon camera
+- dungeon - dungeon map and tile definitions
+- game - game location definitions
+- input - keyboard and controller input
+- map - overworld map and tile definitions
+- player - player state and movement
+- renderer - graphics rendering
+- main - program entry point and game loop
 
 SDL3 is maintained under the vendored/SDL directory.
 
@@ -99,7 +118,7 @@ Each checkpoint should leave the project in a buildable and playable state whene
 
 ## Graphics
 
-The game uses a logical resolution of 320×180.
+The game uses a logical resolution of 320 x 180.
 
 The renderer is designed to scale the game to larger 16:9 resolutions while keeping the internal game world independent of the physical display resolution.
 
@@ -119,9 +138,22 @@ The game world will eventually contain:
 - Dungeons
 - Other areas of interest
 
-Maps are intended to become increasingly data-driven as development progresses.
+The current overworld is 128 x 72 tiles.
 
-The current world is an expanded prototype overworld used to develop the map, camera, movement, and interaction systems.
+The current prototype overworld contains:
+
+- Grassland
+- Forest regions
+- Water features
+- Stone roads
+- An ancient graveyard area
+- An ancient dungeon entrance
+
+The player cannot pass through forest or water tiles.
+
+- The current dungeon prototype is 32 x 24 tiles and contains floors, walls, and an exit.
+
+Maps are intended to become increasingly data-driven as development progresses.
 
 ## Gameplay
 
