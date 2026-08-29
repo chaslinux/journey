@@ -3,12 +3,49 @@
 #include <SDL3/SDL.h>
 
 #include "camera.h"
+#include "character.h"
 #include "dungeon.h"
 #include "game.h"
 #include "input.h"
 #include "map.h"
 #include "player.h"
 #include "renderer.h"
+
+static JourneyClass journey_next_class(
+    JourneyClass class
+)
+{
+    switch (class)
+    {
+        case JOURNEY_CLASS_WARRIOR:
+            return JOURNEY_CLASS_RANGER;
+
+        case JOURNEY_CLASS_RANGER:
+            return JOURNEY_CLASS_MAGE;
+
+        case JOURNEY_CLASS_MAGE:
+        default:
+            return JOURNEY_CLASS_WARRIOR;
+    }
+}
+
+static JourneyClass journey_previous_class(
+    JourneyClass class
+)
+{
+    switch (class)
+    {
+        case JOURNEY_CLASS_WARRIOR:
+            return JOURNEY_CLASS_MAGE;
+
+        case JOURNEY_CLASS_RANGER:
+            return JOURNEY_CLASS_WARRIOR;
+
+        case JOURNEY_CLASS_MAGE:
+        default:
+            return JOURNEY_CLASS_RANGER;
+    }
+}
 
 int main(void)
 {
@@ -18,10 +55,12 @@ int main(void)
             "SDL initialization failed: %s",
             SDL_GetError()
         );
+
         return 1;
     }
 
     SDL_Log("Journey started.");
+
     SDL_Log(
         "SDL version: %d.%d.%d",
         SDL_MAJOR_VERSION,
@@ -43,6 +82,8 @@ int main(void)
     JourneyPlayer player = {0};
     journey_player_init(&player, &map);
 
+    JourneyCharacter character = {0};
+
     JourneyDungeon dungeon = {0};
     journey_dungeon_init(&dungeon);
 
@@ -52,8 +93,14 @@ int main(void)
     JourneyInput input = {0};
     journey_input_init(&input);
 
+    JourneyGameState game_state =
+        JOURNEY_GAME_CHARACTER_CREATION;
+
     JourneyLocation location =
         JOURNEY_LOCATION_OVERWORLD;
+
+    JourneyClass selected_class =
+        JOURNEY_CLASS_WARRIOR;
 
     bool running = true;
 
@@ -63,7 +110,10 @@ int main(void)
 
         while (SDL_PollEvent(&event))
         {
-            journey_input_process_event(&input, &event);
+            journey_input_process_event(
+                &input,
+                &event
+            );
 
             if (event.type == SDL_EVENT_WINDOW_RESIZED)
             {
@@ -76,220 +126,325 @@ int main(void)
             running = false;
         }
 
-        const int old_x = player.x;
-        const int old_y = player.y;
-
         /*
-         * Movement depends on the current location.
+         * ==================================================
+         * CHARACTER CREATION
+         * ==================================================
          */
-        if (location == JOURNEY_LOCATION_OVERWORLD)
+        if (game_state == JOURNEY_GAME_CHARACTER_CREATION)
         {
+            /*
+             * Up/Down and W/S cycle through classes.
+             */
             if (input.move_up)
             {
-                journey_player_move_up(
-                    &player,
-                    &map
+                selected_class =
+                    journey_previous_class(
+                        selected_class
+                    );
+
+                SDL_Log(
+                    "Selected class: %s",
+                    journey_character_get_class_name(
+                        selected_class
+                    )
                 );
             }
 
             if (input.move_down)
             {
-                journey_player_move_down(
-                    &player,
-                    &map
-                );
-            }
-
-            if (input.move_left)
-            {
-                journey_player_move_left(
-                    &player,
-                    &map
-                );
-            }
-
-            if (input.move_right)
-            {
-                journey_player_move_right(
-                    &player,
-                    &map
-                );
-            }
-        }
-        else if (location == JOURNEY_LOCATION_DUNGEON)
-        {
-            if (input.move_up)
-            {
-                journey_player_move_dungeon_up(
-                    &player,
-                    &dungeon
-                );
-            }
-
-            if (input.move_down)
-            {
-                journey_player_move_dungeon_down(
-                    &player,
-                    &dungeon
-                );
-            }
-
-            if (input.move_left)
-            {
-                journey_player_move_dungeon_left(
-                    &player,
-                    &dungeon
-                );
-            }
-
-            if (input.move_right)
-            {
-                journey_player_move_dungeon_right(
-                    &player,
-                    &dungeon
-                );
-            }
-        }
-
-        /*
-         * Enter the dungeon when E is pressed
-         * while standing on the dungeon entrance.
-         */
-        if (location == JOURNEY_LOCATION_OVERWORLD &&
-            input.interact)
-        {
-            const JourneyTile *tile =
-                journey_map_get_tile(
-                    &map,
-                    player.x,
-                    player.y
-                );
-
-            if (tile != NULL &&
-                tile->type == JOURNEY_TILE_DUNGEON)
-            {
-                location = JOURNEY_LOCATION_DUNGEON;
-
-                player.x = 16;
-                player.y = 21;
+                selected_class =
+                    journey_next_class(
+                        selected_class
+                    );
 
                 SDL_Log(
-                    "You enter the ancient dungeon."
+                    "Selected class: %s",
+                    journey_character_get_class_name(
+                        selected_class
+                    )
+                );
+            }
+
+            /*
+             * E confirms the selected class.
+             */
+            if (input.interact)
+            {
+                journey_character_init(
+                    &character,
+                    selected_class
+                );
+
+                game_state =
+                    JOURNEY_GAME_PLAYING;
+
+                SDL_Log(
+                    "Character created: %s",
+                    journey_character_get_class_name(
+                        character.class
+                    )
+                );
+
+                SDL_Log(
+                    "Level: %d  Health: %d/%d  Copper: %d",
+                    character.level,
+                    character.health,
+                    character.max_health,
+                    character.copper
                 );
             }
         }
 
         /*
-         * Interact with the dungeon exit or an
-         * adjacent chest when E is pressed.
+         * ==================================================
+         * GAMEPLAY
+         * ==================================================
          */
-        if (location == JOURNEY_LOCATION_DUNGEON &&
-            input.interact)
+        else if (game_state == JOURNEY_GAME_PLAYING)
         {
-            const JourneyDungeonTile *tile =
-                journey_dungeon_get_interaction(
-                    &dungeon,
-                    player.x,
-                    player.y
-                );
+            const int old_x = player.x;
+            const int old_y = player.y;
 
-            if (tile != NULL)
+            /*
+             * Movement depends on the current location.
+             */
+            if (location == JOURNEY_LOCATION_OVERWORLD)
             {
-                if (tile->type == JOURNEY_DUNGEON_EXIT)
+                if (input.move_up)
                 {
-                    location = JOURNEY_LOCATION_OVERWORLD;
-
-                    player.x = 102;
-                    player.y = 49;
-
-                    SDL_Log(
-                        "You exit the ancient dungeon."
+                    journey_player_move_up(
+                        &player,
+                        &map
                     );
                 }
-                else if (tile->type == JOURNEY_DUNGEON_CHEST)
+
+                if (input.move_down)
                 {
-                    JourneyDungeonTile *chest =
-                        (JourneyDungeonTile *)tile;
+                    journey_player_move_down(
+                        &player,
+                        &map
+                    );
+                }
 
-                    chest->type =
-                        JOURNEY_DUNGEON_CHEST_OPEN;
+                if (input.move_left)
+                {
+                    journey_player_move_left(
+                        &player,
+                        &map
+                    );
+                }
 
-                    chest->walkable = true;
-
-                    SDL_Log(
-                        "You open the ancient chest."
+                if (input.move_right)
+                {
+                    journey_player_move_right(
+                        &player,
+                        &map
                     );
                 }
             }
-        }
-
-        /*
-         * Trigger the grave interaction when the player
-         * enters a grave tile.
-         */
-        if (location == JOURNEY_LOCATION_OVERWORLD &&
-            (player.x != old_x || player.y != old_y))
-        {
-            const JourneyTile *tile =
-                journey_map_get_tile(
-                    &map,
-                    player.x,
-                    player.y
-                );
-
-            if (tile != NULL &&
-                tile->type == JOURNEY_TILE_GRAVE)
+            else if (location == JOURNEY_LOCATION_DUNGEON)
             {
-                SDL_Log(
-                    "You discovered an ancient grave."
+                if (input.move_up)
+                {
+                    journey_player_move_dungeon_up(
+                        &player,
+                        &dungeon
+                    );
+                }
+
+                if (input.move_down)
+                {
+                    journey_player_move_dungeon_down(
+                        &player,
+                        &dungeon
+                    );
+                }
+
+                if (input.move_left)
+                {
+                    journey_player_move_dungeon_left(
+                        &player,
+                        &dungeon
+                    );
+                }
+
+                if (input.move_right)
+                {
+                    journey_player_move_dungeon_right(
+                        &player,
+                        &dungeon
+                    );
+                }
+            }
+
+            /*
+             * Enter the dungeon when E is pressed
+             * while standing on the dungeon entrance.
+             */
+            if (location == JOURNEY_LOCATION_OVERWORLD &&
+                input.interact)
+            {
+                const JourneyTile *tile =
+                    journey_map_get_tile(
+                        &map,
+                        player.x,
+                        player.y
+                    );
+
+                if (tile != NULL &&
+                    tile->type == JOURNEY_TILE_DUNGEON)
+                {
+                    location =
+                        JOURNEY_LOCATION_DUNGEON;
+
+                    player.x = 16;
+                    player.y = 21;
+
+                    SDL_Log(
+                        "You enter the ancient dungeon."
+                    );
+                }
+            }
+
+            /*
+             * Interact with the dungeon exit
+             * or an adjacent chest when E is pressed.
+             */
+            if (location == JOURNEY_LOCATION_DUNGEON &&
+                input.interact)
+            {
+                const JourneyDungeonTile *tile =
+                    journey_dungeon_get_interaction(
+                        &dungeon,
+                        player.x,
+                        player.y
+                    );
+
+                if (tile != NULL)
+                {
+                    if (tile->type ==
+                        JOURNEY_DUNGEON_EXIT)
+                    {
+                        location =
+                            JOURNEY_LOCATION_OVERWORLD;
+
+                        player.x = 102;
+                        player.y = 49;
+
+                        SDL_Log(
+                            "You exit the ancient dungeon."
+                        );
+                    }
+                    else if (tile->type ==
+                             JOURNEY_DUNGEON_CHEST)
+                    {
+                        JourneyDungeonTile *chest =
+                            (JourneyDungeonTile *)tile;
+
+                        chest->type =
+                            JOURNEY_DUNGEON_CHEST_OPEN;
+
+                        chest->walkable = true;
+
+                        SDL_Log(
+                            "You open the ancient chest."
+                        );
+                    }
+                }
+            }
+
+            /*
+             * Trigger the grave interaction when
+             * the player enters a grave tile.
+             */
+            if (location == JOURNEY_LOCATION_OVERWORLD &&
+                (player.x != old_x ||
+                 player.y != old_y))
+            {
+                const JourneyTile *tile =
+                    journey_map_get_tile(
+                        &map,
+                        player.x,
+                        player.y
+                    );
+
+                if (tile != NULL &&
+                    tile->type == JOURNEY_TILE_GRAVE)
+                {
+                    SDL_Log(
+                        "You discovered an ancient grave."
+                    );
+                }
+            }
+
+            /*
+             * Camera follows the player.
+             */
+            if (location == JOURNEY_LOCATION_OVERWORLD)
+            {
+                journey_camera_follow(
+                    &camera,
+                    &player,
+                    map.width,
+                    map.height
+                );
+            }
+            else if (location == JOURNEY_LOCATION_DUNGEON)
+            {
+                journey_camera_follow(
+                    &camera,
+                    &player,
+                    dungeon.width,
+                    dungeon.height
                 );
             }
         }
 
-        if (location == JOURNEY_LOCATION_OVERWORLD)
-        {
-            journey_camera_follow(
-                &camera,
-                &player,
-                map.width,
-                map.height
-            );
-        }
-        else if (location == JOURNEY_LOCATION_DUNGEON)
-        {
-            journey_camera_follow(
-                &camera,
-                &player,
-                dungeon.width,
-                dungeon.height
-            );
-        }
-
+        /*
+         * Reset one-frame input.
+         */
         journey_input_init(&input);
+
+        /*
+         * ==================================================
+         * RENDER
+         * ==================================================
+         */
         journey_renderer_begin(&renderer);
 
-        if (location == JOURNEY_LOCATION_OVERWORLD)
+        if (game_state == JOURNEY_GAME_CHARACTER_CREATION)
         {
-            journey_renderer_draw_map(
+            journey_renderer_draw_character_creation(
                 &renderer,
-                &map,
-                &camera
+                selected_class
             );
         }
-        else if (location == JOURNEY_LOCATION_DUNGEON)
+        else if (game_state == JOURNEY_GAME_PLAYING)
         {
-            journey_renderer_draw_dungeon(
-                &renderer,
-                &dungeon,
-                &camera
-            );
-        }
+            if (location == JOURNEY_LOCATION_OVERWORLD)
+            {
+                journey_renderer_draw_map(
+                    &renderer,
+                    &map,
+                    &camera
+                );
+            }
+            else if (location == JOURNEY_LOCATION_DUNGEON)
+            {
+                journey_renderer_draw_dungeon(
+                    &renderer,
+                    &dungeon,
+                    &camera
+                );
+            }
 
-        journey_renderer_draw_player(
-            &renderer,
-            &player,
-            &camera
-        );
+            journey_renderer_draw_player(
+                &renderer,
+                &player,
+                &camera
+            );
+        }
 
         journey_renderer_present(&renderer);
     }

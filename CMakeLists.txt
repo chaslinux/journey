@@ -23,6 +23,7 @@ add_executable(journey
     src/camera.c
     src/dungeon.c
     src/game.c
+    src/character.c
 )
 
 target_link_libraries(journey

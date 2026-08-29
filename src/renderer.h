@@ -8,6 +8,7 @@
 #include "dungeon.h"
 #include "player.h"
 #include "camera.h"
+#include "character.h"
 
 #define JOURNEY_LOGICAL_WIDTH  320
 #define JOURNEY_LOGICAL_HEIGHT 180
@@ -48,6 +49,11 @@ void journey_renderer_draw_player(
     JourneyRenderer *renderer,
     const JourneyPlayer *player,
     const JourneyCamera *camera
+);
+
+void journey_renderer_draw_character_creation(
+    JourneyRenderer *renderer,
+    JourneyClass selected_class
 );
 
 #endif

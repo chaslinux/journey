@@ -172,19 +172,6 @@ void journey_renderer_draw_map(
         return;
     }
 
-    /*
-     * The entire map is 64 x 36 tiles.
-     *
-     * Our logical screen is 320 x 180 pixels,
-     * so each tile is exactly 5 x 5 logical pixels.
-     */
-
-    /*
-     * Map tiles are 10 x 10 logical pixels.
-     *
-     * The 64 x 36 map is therefore 640 x 360
-     * logical pixels, while the viewport is 320 x 180.
-     */
     const float tile_width = 10.0f;
     const float tile_height = 10.0f;
 
@@ -273,10 +260,6 @@ void journey_renderer_draw_map(
                     break;
             }
 
-            /*
-             * Convert map coordinates to logical screen
-             * coordinates, then subtract the camera position.
-             */
             const float world_x =
                 (float)x * tile_width;
 
@@ -429,15 +412,9 @@ void journey_renderer_draw_player(
         return;
     }
 
-    /*
-     * Keep player coordinates consistent with the map.
-     */
     const float tile_width = 10.0f;
     const float tile_height = 10.0f;
 
-    /*
-     * Original player proportions.
-     */
     const float player_width = 6.0f;
     const float player_height = 10.0f;
 
@@ -457,9 +434,6 @@ void journey_renderer_draw_player(
         tile_y +
         (tile_height - player_height) / 2.0f;
 
-    /*
-     * Dark outline.
-     */
     SDL_SetRenderDrawColor(
         renderer->renderer,
         20,
@@ -480,9 +454,6 @@ void journey_renderer_draw_player(
         &outline
     );
 
-    /*
-     * Pale character body.
-     */
     SDL_SetRenderDrawColor(
         renderer->renderer,
         220,
@@ -503,9 +474,6 @@ void journey_renderer_draw_player(
         &body
     );
 
-    /*
-     * Dark head / face detail.
-     */
     SDL_SetRenderDrawColor(
         renderer->renderer,
         40,
@@ -524,6 +492,304 @@ void journey_renderer_draw_player(
     SDL_RenderFillRect(
         renderer->renderer,
         &face
+    );
+}
+
+void journey_renderer_draw_character_creation(
+    JourneyRenderer *renderer,
+    JourneyClass selected_class
+)
+{
+    if (renderer == NULL ||
+        renderer->renderer == NULL)
+    {
+        return;
+    }
+
+    /*
+     * Background.
+     */
+    SDL_SetRenderDrawColor(
+        renderer->renderer,
+        12,
+        12,
+        18,
+        255
+    );
+
+    SDL_RenderClear(renderer->renderer);
+
+    /*
+     * Title.
+     *
+     * JOURNEY is 7 characters at the debug font's
+     * approximately 8-pixel character width.
+     * 320 - 56 = 264 / 2 = 132.
+     */
+    SDL_SetRenderDrawColor(
+        renderer->renderer,
+        230,
+        220,
+        180,
+        255
+    );
+
+    SDL_RenderDebugText(
+        renderer->renderer,
+        132.0f,
+        18.0f,
+        "JOURNEY"
+    );
+
+    SDL_RenderDebugText(
+        renderer->renderer,
+        94.0f,
+        34.0f,
+        "CHOOSE YOUR CLASS"
+    );
+
+    /*
+     * Class list.
+     */
+    const float class_x = 70.0f;
+    const float class_y = 60.0f;
+    const float class_spacing = 18.0f;
+
+    for (int i = 0; i < 3; ++i)
+    {
+        JourneyClass class =
+            (JourneyClass)i;
+
+        const bool selected =
+            class == selected_class;
+
+        if (selected)
+        {
+            SDL_SetRenderDrawColor(
+                renderer->renderer,
+                70,
+                70,
+                100,
+                255
+            );
+
+            SDL_FRect highlight = {
+                class_x - 8.0f,
+                class_y +
+                    ((float)i * class_spacing) - 2.0f,
+                80.0f,
+                12.0f
+            };
+
+            SDL_RenderFillRect(
+                renderer->renderer,
+                &highlight
+            );
+
+            SDL_SetRenderDrawColor(
+                renderer->renderer,
+                255,
+                230,
+                120,
+                255
+            );
+
+            SDL_RenderDebugText(
+                renderer->renderer,
+                class_x,
+                class_y +
+                    ((float)i * class_spacing),
+                ">"
+            );
+        }
+
+        if (selected)
+        {
+            SDL_SetRenderDrawColor(
+                renderer->renderer,
+                255,
+                230,
+                120,
+                255
+            );
+        }
+        else
+        {
+            SDL_SetRenderDrawColor(
+                renderer->renderer,
+                180,
+                180,
+                190,
+                255
+            );
+        }
+
+        SDL_RenderDebugText(
+            renderer->renderer,
+            class_x + 10.0f,
+            class_y +
+                ((float)i * class_spacing),
+            journey_character_get_class_name(class)
+        );
+    }
+
+    /*
+     * Preview the selected class's starting stats.
+     */
+    JourneyCharacter preview = {0};
+
+    journey_character_init(
+        &preview,
+        selected_class
+    );
+
+    /*
+     * Stats panel.
+     *
+     * Values are deliberately kept in one column.
+     * COPPER is longer than the other labels, so
+     * the value column is farther right.
+     */
+    SDL_SetRenderDrawColor(
+        renderer->renderer,
+        180,
+        180,
+        190,
+        255
+    );
+
+    SDL_RenderDebugText(
+        renderer->renderer,
+        178.0f,
+        55.0f,
+        "STATS"
+    );
+
+    SDL_RenderDebugText(
+        renderer->renderer,
+        178.0f,
+        69.0f,
+        "STR:"
+    );
+
+    SDL_RenderDebugTextFormat(
+        renderer->renderer,
+        242.0f,
+        69.0f,
+        "%d",
+        preview.strength
+    );
+
+    SDL_RenderDebugText(
+        renderer->renderer,
+        178.0f,
+        81.0f,
+        "AGI:"
+    );
+
+    SDL_RenderDebugTextFormat(
+        renderer->renderer,
+        242.0f,
+        81.0f,
+        "%d",
+        preview.agility
+    );
+
+    SDL_RenderDebugText(
+        renderer->renderer,
+        178.0f,
+        93.0f,
+        "INT:"
+    );
+
+    SDL_RenderDebugTextFormat(
+        renderer->renderer,
+        242.0f,
+        93.0f,
+        "%d",
+        preview.intelligence
+    );
+
+    SDL_RenderDebugText(
+        renderer->renderer,
+        178.0f,
+        105.0f,
+        "HP:"
+    );
+
+    SDL_RenderDebugTextFormat(
+        renderer->renderer,
+        242.0f,
+        105.0f,
+        "%d/%d",
+        preview.health,
+        preview.max_health
+    );
+
+    SDL_RenderDebugText(
+        renderer->renderer,
+        178.0f,
+        117.0f,
+        "LVL:"
+    );
+
+    SDL_RenderDebugTextFormat(
+        renderer->renderer,
+        242.0f,
+        117.0f,
+        "%d",
+        preview.level
+    );
+
+    SDL_RenderDebugText(
+        renderer->renderer,
+        178.0f,
+        129.0f,
+        "COPPER:"
+    );
+
+    SDL_RenderDebugTextFormat(
+        renderer->renderer,
+        242.0f,
+        129.0f,
+        "%d",
+        preview.copper
+    );
+
+    /*
+     * Controls.
+     *
+     * There is now a deliberate gap between
+     * the COPPER row and these instructions.
+     */
+    SDL_SetRenderDrawColor(
+        renderer->renderer,
+        150,
+        150,
+        160,
+        255
+    );
+
+    SDL_RenderDebugText(
+        renderer->renderer,
+        62.0f,
+        148.0f,
+        "W/S or UP/DOWN: SELECT"
+    );
+
+    SDL_SetRenderDrawColor(
+        renderer->renderer,
+        255,
+        230,
+        120,
+        255
+    );
+
+    SDL_RenderDebugText(
+        renderer->renderer,
+        91.0f,
+        162.0f,
+        "E: BEGIN JOURNEY"
     );
 }
 
