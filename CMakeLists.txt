@@ -24,6 +24,7 @@ add_executable(journey
     src/dungeon.c
     src/game.c
     src/character.c
+    src/monster.c
 )
 
 target_link_libraries(journey

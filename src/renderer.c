@@ -495,6 +495,125 @@ void journey_renderer_draw_player(
     );
 }
 
+void journey_renderer_draw_monster(
+    JourneyRenderer *renderer,
+    const JourneyMonster *monster,
+    const JourneyCamera *camera
+)
+{
+    if (renderer == NULL ||
+        renderer->renderer == NULL ||
+        monster == NULL ||
+        monster->definition == NULL ||
+        camera == NULL)
+    {
+        return;
+    }
+
+    const float tile_width = 10.0f;
+    const float tile_height = 10.0f;
+
+    const float monster_width = 8.0f;
+    const float monster_height = 8.0f;
+
+    const float tile_x =
+        (float)monster->x * tile_width -
+        camera->x;
+
+    const float tile_y =
+        (float)monster->y * tile_height -
+        camera->y;
+
+    const float monster_x =
+        tile_x +
+        (tile_width - monster_width) / 2.0f;
+
+    const float monster_y =
+        tile_y +
+        (tile_height - monster_height) / 2.0f;
+
+    /*
+     * Dark outline.
+     */
+    SDL_SetRenderDrawColor(
+        renderer->renderer,
+        15,
+        15,
+        18,
+        255
+    );
+
+    SDL_FRect outline = {
+        monster_x - 1.0f,
+        monster_y - 1.0f,
+        monster_width + 2.0f,
+        monster_height + 2.0f
+    };
+
+    SDL_RenderFillRect(
+        renderer->renderer,
+        &outline
+    );
+
+    /*
+     * Bone-colored body.
+     */
+    SDL_SetRenderDrawColor(
+        renderer->renderer,
+        190,
+        185,
+        160,
+        255
+    );
+
+    SDL_FRect body = {
+        monster_x,
+        monster_y,
+        monster_width,
+        monster_height
+    };
+
+    SDL_RenderFillRect(
+        renderer->renderer,
+        &body
+    );
+
+    /*
+     * Red eyes.
+     */
+    SDL_SetRenderDrawColor(
+        renderer->renderer,
+        180,
+        35,
+        35,
+        255
+    );
+
+    SDL_FRect left_eye = {
+        monster_x + 2.0f,
+        monster_y + 2.0f,
+        1.0f,
+        1.0f
+    };
+
+    SDL_FRect right_eye = {
+        monster_x + 5.0f,
+        monster_y + 2.0f,
+        1.0f,
+        1.0f
+    };
+
+    SDL_RenderFillRect(
+        renderer->renderer,
+        &left_eye
+    );
+
+    SDL_RenderFillRect(
+        renderer->renderer,
+        &right_eye
+    );
+}
+
 void journey_renderer_draw_character_creation(
     JourneyRenderer *renderer,
     JourneyClass selected_class

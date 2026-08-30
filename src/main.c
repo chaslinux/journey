@@ -8,6 +8,7 @@
 #include "game.h"
 #include "input.h"
 #include "map.h"
+#include "monster.h"
 #include "player.h"
 #include "renderer.h"
 
@@ -83,6 +84,15 @@ int main(void)
     journey_player_init(&player, &map);
 
     JourneyCharacter character = {0};
+
+	JourneyMonster monster = {0};
+
+	journey_monster_init(
+		&monster,
+		&JOURNEY_MONSTER_SKELETAL_RAT,
+		75,
+		34
+	);
 
     JourneyDungeon dungeon = {0};
     journey_dungeon_init(&dungeon);
@@ -438,6 +448,15 @@ int main(void)
                     &camera
                 );
             }
+
+			if (location == JOURNEY_LOCATION_OVERWORLD)
+			{
+				journey_renderer_draw_monster(
+					&renderer,
+					&monster,
+					&camera
+				);
+			}
 
             journey_renderer_draw_player(
                 &renderer,
