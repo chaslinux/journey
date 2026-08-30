@@ -415,21 +415,37 @@ int main(void)
                             "You exit the ancient dungeon."
                         );
                     }
-                    else if (tile->type ==
-                             JOURNEY_DUNGEON_CHEST)
-                    {
-                        JourneyDungeonTile *chest =
-                            (JourneyDungeonTile *)tile;
+					else if (tile->type ==
+							 JOURNEY_DUNGEON_CHEST)
+					{
+						JourneyDungeonTile *chest =
+							(JourneyDungeonTile *)tile;
 
-                        chest->type =
-                            JOURNEY_DUNGEON_CHEST_OPEN;
+						chest->type =
+							JOURNEY_DUNGEON_CHEST_OPEN;
 
-                        chest->walkable = true;
+						chest->walkable = true;
 
-                        SDL_Log(
-                            "You open the ancient chest."
-                        );
-                    }
+						SDL_Log(
+							"You open the ancient chest."
+						);
+
+						if (journey_character_add_item(
+								&character,
+								&JOURNEY_ITEM_DEFINITION_HEALING_POTION))
+						{
+							SDL_Log(
+								"You found: %s.",
+								JOURNEY_ITEM_DEFINITION_HEALING_POTION.name
+							);
+						}
+						else
+						{
+							SDL_Log(
+								"Your inventory is full."
+							);
+						}
+					}
                 }
             }
 

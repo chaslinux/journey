@@ -55,6 +55,13 @@ void journey_character_init(
     character->experience = 0;
 
     character->copper = JOURNEY_STARTING_COPPER;
+
+    for (int i = 0; i < JOURNEY_INVENTORY_SIZE; ++i)
+    {
+        character->inventory[i] = NULL;
+    }
+
+    character->inventory_count = 0;
 }
 
 const char *journey_character_get_class_name(
@@ -101,5 +108,54 @@ void journey_character_add_copper(
     }
 
     character->copper += copper;
+}
+
+bool journey_character_add_item(
+    JourneyCharacter *character,
+    const JourneyItemDefinition *item
+)
+{
+    if (character == NULL ||
+        item == NULL ||
+        character->inventory_count >= JOURNEY_INVENTORY_SIZE)
+    {
+        return false;
+    }
+
+    character->inventory[
+        character->inventory_count
+    ] = item;
+
+    character->inventory_count++;
+
+    return true;
+}
+
+int journey_character_get_item_count(
+    const JourneyCharacter *character
+)
+{
+    if (character == NULL)
+    {
+        return 0;
+    }
+
+    return character->inventory_count;
+}
+
+const JourneyItemDefinition *
+journey_character_get_item(
+    const JourneyCharacter *character,
+    int index
+)
+{
+    if (character == NULL ||
+        index < 0 ||
+        index >= character->inventory_count)
+    {
+        return NULL;
+    }
+
+    return character->inventory[index];
 }
 
