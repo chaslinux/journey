@@ -221,37 +221,41 @@ int main(void)
              */
             if (location == JOURNEY_LOCATION_OVERWORLD)
             {
-                if (input.move_up)
-                {
-                    journey_player_move_up(
-                        &player,
-                        &map
-                    );
-                }
+				if (input.move_up)
+				{
+					journey_player_move_up(
+						&player,
+						&map,
+						&monster
+					);
+				}
 
-                if (input.move_down)
-                {
-                    journey_player_move_down(
-                        &player,
-                        &map
-                    );
-                }
+				if (input.move_down)
+				{
+					journey_player_move_down(
+						&player,
+						&map,
+						&monster
+					);
+				}
 
-                if (input.move_left)
-                {
-                    journey_player_move_left(
-                        &player,
-                        &map
-                    );
-                }
+				if (input.move_left)
+				{
+					journey_player_move_left(
+						&player,
+						&map,
+						&monster
+					);
+				}
 
-                if (input.move_right)
-                {
-                    journey_player_move_right(
-                        &player,
-                        &map
-                    );
-                }
+				if (input.move_right)
+				{
+					journey_player_move_right(
+						&player,
+						&map,
+						&monster
+					);
+				}
             }
             else if (location == JOURNEY_LOCATION_DUNGEON)
             {
@@ -287,6 +291,71 @@ int main(void)
                     );
                 }
             }
+
+			/*
+			 * Attack an adjacent monster when E is pressed.
+			 */
+			if (location == JOURNEY_LOCATION_OVERWORLD &&
+				input.interact)
+			{
+				if (monster.health > 0)
+				{
+					const int old_health = monster.health;
+
+					journey_player_attack_monster(
+						&player,
+						&monster
+					);
+
+					if (monster.health != old_health)
+					{
+						SDL_Log(
+						    "You attack the %s for %d damage. "
+						    "Health: %d/%d",
+						    monster.definition->name,
+						    old_health - monster.health,
+						    monster.health,
+						    monster.definition->max_health
+						);
+					}
+
+					if (monster.health == 0 &&
+						old_health > 0)
+					{
+						const int experience =
+						    monster.definition->experience;
+
+						const int copper_range =
+						    monster.definition->copper_max -
+						    monster.definition->copper_min + 1;
+
+						const int copper =
+							monster.definition->copper_min +
+							SDL_rand(copper_range);
+
+						journey_character_add_experience(
+						    &character,
+						    experience
+						);
+
+						journey_character_add_copper(
+						    &character,
+						    copper
+						);
+
+						SDL_Log(
+						    "%s defeated! "
+						    "You gain %d experience and %d copper. "
+						    "Total XP: %d  Copper: %d",
+						    monster.definition->name,
+						    experience,
+						    copper,
+						    character.experience,
+						    character.copper
+						);
+					}
+				}
+			}
 
             /*
              * Enter the dungeon when E is pressed
@@ -449,7 +518,8 @@ int main(void)
                 );
             }
 
-			if (location == JOURNEY_LOCATION_OVERWORLD)
+			if (location == JOURNEY_LOCATION_OVERWORLD &&
+				monster.health > 0)
 			{
 				journey_renderer_draw_monster(
 					&renderer,

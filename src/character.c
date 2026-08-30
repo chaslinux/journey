@@ -77,3 +77,29 @@ const char *journey_character_get_class_name(
     }
 }
 
+void journey_character_add_experience(
+    JourneyCharacter *character,
+    int experience
+)
+{
+    if (character == NULL || experience < 0)
+    {
+        return;
+    }
+
+    character->experience += experience;
+}
+
+void journey_character_add_copper(
+    JourneyCharacter *character,
+    int copper
+)
+{
+    if (character == NULL || copper < 0)
+    {
+        return;
+    }
+
+    character->copper += copper;
+}
+

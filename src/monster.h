@@ -54,4 +54,16 @@ void journey_monster_init(
     int y
 );
 
+void journey_monster_init(
+    JourneyMonster *monster,
+    const JourneyMonsterDefinition *definition,
+    int x,
+    int y
+);
+
+void journey_monster_take_damage(
+    JourneyMonster *monster,
+    int damage
+);
+
 #endif

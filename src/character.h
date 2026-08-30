@@ -37,6 +37,16 @@ void journey_character_init(
     JourneyClass class
 );
 
+void journey_character_add_experience(
+    JourneyCharacter *character,
+    int experience
+);
+
+void journey_character_add_copper(
+    JourneyCharacter *character,
+    int copper
+);
+
 const char *journey_character_get_class_name(
     JourneyClass class
 );

@@ -41,3 +41,22 @@ void journey_monster_init(
     monster->x = x;
     monster->y = y;
 }
+
+void journey_monster_take_damage(
+    JourneyMonster *monster,
+    int damage
+)
+{
+    if (monster == NULL || damage < 0)
+    {
+        return;
+    }
+
+    monster->health -= damage;
+
+    if (monster->health < 0)
+    {
+        monster->health = 0;
+    }
+}
+

@@ -5,6 +5,7 @@
 
 #include "dungeon.h"
 #include "map.h"
+#include "monster.h"
 
 typedef struct
 {
@@ -19,22 +20,26 @@ void journey_player_init(
 
 void journey_player_move_up(
     JourneyPlayer *player,
-    const JourneyMap *map
+    const JourneyMap *map,
+    const JourneyMonster *monster
 );
 
 void journey_player_move_down(
     JourneyPlayer *player,
-    const JourneyMap *map
+    const JourneyMap *map,
+    const JourneyMonster *monster
 );
 
 void journey_player_move_left(
     JourneyPlayer *player,
-    const JourneyMap *map
+    const JourneyMap *map,
+    const JourneyMonster *monster
 );
 
 void journey_player_move_right(
     JourneyPlayer *player,
-    const JourneyMap *map
+    const JourneyMap *map,
+    const JourneyMonster *monster
 );
 
 void journey_player_move_dungeon_up(
@@ -55,6 +60,16 @@ void journey_player_move_dungeon_left(
 void journey_player_move_dungeon_right(
     JourneyPlayer *player,
     const JourneyDungeon *dungeon
+);
+
+void journey_player_attack_monster(
+    JourneyPlayer *player,
+    JourneyMonster *monster
+);
+
+bool journey_player_is_adjacent_to_monster(
+    const JourneyPlayer *player,
+    const JourneyMonster *monster
 );
 
 #endif
