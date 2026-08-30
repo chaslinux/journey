@@ -8,6 +8,7 @@
 #define JOURNEY_CHARACTER_NAME_LENGTH 32
 #define JOURNEY_STARTING_COPPER 100
 #define JOURNEY_INVENTORY_SIZE 8
+#define JOURNEY_LEVEL_2_EXPERIENCE 4
 
 typedef enum
 {
@@ -45,7 +46,7 @@ void journey_character_init(
     JourneyClass class
 );
 
-void journey_character_add_experience(
+bool journey_character_add_experience(
     JourneyCharacter *character,
     int experience
 );

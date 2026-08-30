@@ -84,17 +84,29 @@ const char *journey_character_get_class_name(
     }
 }
 
-void journey_character_add_experience(
+bool journey_character_add_experience(
     JourneyCharacter *character,
     int experience
 )
 {
     if (character == NULL || experience < 0)
     {
-        return;
+        return false;
     }
 
     character->experience += experience;
+
+    if (character->level == 1 &&
+        character->experience >= JOURNEY_LEVEL_2_EXPERIENCE)
+    {
+        character->level = 2;
+        character->max_health += 20;
+        character->health = character->max_health;
+
+        return true;
+    }
+
+    return false;
 }
 
 void journey_character_add_copper(

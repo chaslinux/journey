@@ -333,15 +333,25 @@ int main(void)
 							monster.definition->copper_min +
 							SDL_rand(copper_range);
 
-						journey_character_add_experience(
-						    &character,
-						    experience
-						);
+						const bool leveled_up =
+							journey_character_add_experience(
+								&character,
+								experience
+							);
 
 						journey_character_add_copper(
 						    &character,
 						    copper
 						);
+
+						if (leveled_up)
+						{
+							SDL_Log(
+								"You reached level %d! Max health is now %d.",
+								character.level,
+								character.max_health
+							);
+						}
 
 						SDL_Log(
 						    "%s defeated! "
