@@ -20,6 +20,7 @@ Completed checkpoints:
 - Checkpoint 008 - Grave interaction
 - Checkpoint 009 - Scrolling camera and expanded world map
 - Checkpoint 010 - Dungeon entry, dungeon rendering, dungeon movement, collision, and camera
+- Checkpoint 011 - Data-driven monster definition and monster rendering
 
 The current prototype contains:
 
@@ -34,6 +35,13 @@ The current prototype contains:
 - Dungeon movement
 - A scrolling dungeon camera
 - Location-based rendering and movement
+- A data-driven monster definition system
+- A Skeletal Rat monster definition
+- Monster health, damage, defence, movement, experience, and copper reward data
+- Monster attack and undead type definitions
+- Monster placement and rendering in the overworld
+
+The current monster system is an early foundation for the game's future data-driven enemy system. Monsters are currently represented by simple placeholder graphics rather than finished artwork.
 
 Towns and settlements have not yet been implemented.
 
@@ -88,10 +96,12 @@ The main source code is located in the src directory.
 Current source components include:
 
 - camera - world and dungeon camera
+- character - player character classes and character state
 - dungeon - dungeon map and tile definitions
-- game - game location definitions
+- game - game location and state definitions
 - input - keyboard and controller input
 - map - overworld map and tile definitions
+- monster - data-driven monster definitions and monster state
 - player - player state and movement
 - renderer - graphics rendering
 - main - program entry point and game loop
@@ -116,6 +126,8 @@ Git checkpoints are used throughout development so that major milestones remain 
 
 Each checkpoint should leave the project in a buildable and playable state whenever practical.
 
+The game is intended to echo the design philosophy of classic RPGs such as Ultima IV. Movement, exploration, encounters, character development, and other systems will be developed with that style of gameplay in mind while using an original setting, world, characters, and game systems.
+
 ## Graphics
 
 The game uses a logical resolution of 320 x 180.
@@ -125,6 +137,8 @@ The renderer is designed to scale the game to larger 16:9 resolutions while keep
 Integer scaling is preferred for the retro pixel-art presentation.
 
 The game will eventually use deliberately simple artwork inspired by classic RPGs. We are not currently trying to create finished or polished sprites.
+
+Monsters currently use simple placeholder graphics while the underlying monster data and gameplay systems are developed.
 
 ## World
 
@@ -148,10 +162,11 @@ The current prototype overworld contains:
 - Stone roads
 - An ancient graveyard area
 - An ancient dungeon entrance
+- A Skeletal Rat encounter
 
 The player cannot pass through forest or water tiles.
 
-- The current dungeon prototype is 32 x 24 tiles and contains floors, walls, and an exit.
+The current dungeon prototype is 32 x 24 tiles and contains floors, walls, a dungeon exit, and a chest.
 
 Maps are intended to become increasingly data-driven as development progresses.
 
@@ -178,6 +193,21 @@ The game will feature:
 - Towns and shops
 - Dungeons and bosses
 
+The monster system is being developed as a foundation for future encounters. Monster definitions currently contain data such as:
+
+- Name
+- Maximum health
+- Damage
+- Defence
+- Movement
+- Experience reward
+- Minimum copper reward
+- Maximum copper reward
+- Attack type
+- Undead type
+
+Future combat and encounter systems will use this information rather than requiring individual monster types to be hard-coded throughout the game.
+
 ## Data-Driven Design
 
 Game content will eventually be represented as data rather than requiring individual C code for every object.
@@ -194,6 +224,10 @@ This approach is planned for:
 - Encounters
 - Treasure
 - Quests
+
+Monster definitions are now the first practical implementation of this approach.
+
+The current monster system separates a monster's definition from its runtime state. This allows multiple instances of the same monster type to share a common definition while maintaining their own position and health.
 
 This should make it easier to expand the game and allow contributors to add content without modifying the core engine.
 
