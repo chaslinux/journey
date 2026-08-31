@@ -51,6 +51,11 @@ bool journey_character_add_experience(
     int experience
 );
 
+void journey_character_take_damage(
+    JourneyCharacter *character,
+    int damage
+);
+
 void journey_character_add_copper(
     JourneyCharacter *character,
     int copper

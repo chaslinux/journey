@@ -109,6 +109,24 @@ bool journey_character_add_experience(
     return false;
 }
 
+void journey_character_take_damage(
+    JourneyCharacter *character,
+    int damage
+)
+{
+    if (character == NULL || damage < 0)
+    {
+        return;
+    }
+
+    character->health -= damage;
+
+    if (character->health < 0)
+    {
+        character->health = 0;
+    }
+}
+
 void journey_character_add_copper(
     JourneyCharacter *character,
     int copper

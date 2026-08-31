@@ -319,6 +319,26 @@ int main(void)
 						);
 					}
 
+                    if (monster.health > 0)
+                    {
+                        const int monster_damage =
+                            monster.definition->damage;
+
+                        journey_character_take_damage(
+                            &character,
+                            monster_damage
+                        );
+
+                        SDL_Log(
+                            "The %s attacks you for %d damage. "
+                            "Health: %d/%d",
+                            monster.definition->name,
+                            monster_damage,
+                            character.health,
+                            character.max_health
+                        );
+                    }
+
 					if (monster.health == 0 &&
 						old_health > 0)
 					{
