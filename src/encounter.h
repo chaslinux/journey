@@ -11,4 +11,9 @@ void journey_encounter_fight(
     JourneyMonster *monster
 );
 
+void journey_encounter_monster_turn(
+    JourneyCharacter *character,
+    const JourneyMonster *monster
+);
+
 #endif

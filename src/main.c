@@ -114,6 +114,7 @@ int main(void)
         JOURNEY_CLASS_WARRIOR;
 
     bool running = true;
+    bool monster_engaged = false;
 
     while (running)
     {
@@ -216,6 +217,7 @@ int main(void)
         {
             const int old_x = player.x;
             const int old_y = player.y;
+            bool moved = false;
 
             /*
              * Use a Healing Potion when I is pressed.
@@ -255,7 +257,7 @@ int main(void)
             {
                 if (input.move_up)
                 {
-                    journey_player_move_up(
+                    moved = journey_player_move_up(
                         &player,
                         &map,
                         &monster
@@ -263,7 +265,7 @@ int main(void)
                 }
                 else if (input.move_down)
                 {
-                    journey_player_move_down(
+                    moved = journey_player_move_down(
                         &player,
                         &map,
                         &monster
@@ -271,7 +273,7 @@ int main(void)
                 }
                 else if (input.move_left)
                 {
-                    journey_player_move_left(
+                    moved = journey_player_move_left(
                         &player,
                         &map,
                         &monster
@@ -279,7 +281,7 @@ int main(void)
                 }
                 else if (input.move_right)
                 {
-                    journey_player_move_right(
+                    moved = journey_player_move_right(
                         &player,
                         &map,
                         &monster
@@ -321,15 +323,39 @@ int main(void)
                 }
             }
 
+            if (location == JOURNEY_LOCATION_OVERWORLD &&
+                moved &&
+                monster_engaged &&
+                monster.health > 0 &&
+                journey_player_is_adjacent_to_monster(
+                    &player,
+                    &monster))
+            {
+                journey_encounter_monster_turn(
+                    &character,
+                    &monster
+                );
+            }
+
 			/*
 			 * Attack an adjacent monster when E is pressed.
 			 */
+            if (monster_engaged &&
+                !journey_player_is_adjacent_to_monster(
+                    &player,
+                    &monster))
+            {
+                monster_engaged = false;
+            }
+
 			if (location == JOURNEY_LOCATION_OVERWORLD &&
 				input.interact)
 			{
 				if (monster.health > 0)
 				{
 					const int old_health = monster.health;
+
+                    monster_engaged = true;
 
                     journey_encounter_fight(
                         &player,
