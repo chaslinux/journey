@@ -21,25 +21,25 @@ void journey_player_init(
 bool journey_player_move_up(
     JourneyPlayer *player,
     const JourneyMap *map,
-    const JourneyMonster *monster
+    const JourneyMonster monsters[JOURNEY_MAX_MONSTERS]
 );
 
 bool journey_player_move_down(
     JourneyPlayer *player,
     const JourneyMap *map,
-    const JourneyMonster *monster
+    const JourneyMonster monsters[JOURNEY_MAX_MONSTERS]
 );
 
 bool journey_player_move_left(
     JourneyPlayer *player,
     const JourneyMap *map,
-    const JourneyMonster *monster
+    const JourneyMonster monsters[JOURNEY_MAX_MONSTERS]
 );
 
 bool journey_player_move_right(
     JourneyPlayer *player,
     const JourneyMap *map,
-    const JourneyMonster *monster
+    const JourneyMonster monsters[JOURNEY_MAX_MONSTERS]
 );
 
 void journey_player_move_dungeon_up(

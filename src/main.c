@@ -86,12 +86,19 @@ int main(void)
 
     JourneyCharacter character = {0};
 
-	JourneyMonster monster = {0};
+	JourneyMonster monsters[JOURNEY_MAX_MONSTERS] = {0};
 
 	journey_monster_init(
-		&monster,
+		&monsters[0],
 		&JOURNEY_MONSTER_SKELETAL_RAT,
 		75,
+		34
+	);
+
+	journey_monster_init(
+		&monsters[1],
+		&JOURNEY_MONSTER_SKELETAL_RAT,
+		80,
 		34
 	);
 
@@ -114,7 +121,7 @@ int main(void)
         JOURNEY_CLASS_WARRIOR;
 
     bool running = true;
-    bool monster_engaged = false;
+    int engaged_monster = -1;
 
     while (running)
     {
@@ -260,7 +267,7 @@ int main(void)
                     moved = journey_player_move_up(
                         &player,
                         &map,
-                        &monster
+                        monsters
                     );
                 }
                 else if (input.move_down)
@@ -268,7 +275,7 @@ int main(void)
                     moved = journey_player_move_down(
                         &player,
                         &map,
-                        &monster
+                        monsters
                     );
                 }
                 else if (input.move_left)
@@ -276,7 +283,7 @@ int main(void)
                     moved = journey_player_move_left(
                         &player,
                         &map,
-                        &monster
+                        monsters
                     );
                 }
                 else if (input.move_right)
@@ -284,7 +291,7 @@ int main(void)
                     moved = journey_player_move_right(
                         &player,
                         &map,
-                        &monster
+                        monsters
                     );
                 }
             }
@@ -323,93 +330,137 @@ int main(void)
                 }
             }
 
+            /*
+             * An engaged monster gets a response after
+             * the player moves, as long as the player
+             * remains adjacent.
+             */
             if (location == JOURNEY_LOCATION_OVERWORLD &&
                 moved &&
-                monster_engaged &&
-                monster.health > 0 &&
-                journey_player_is_adjacent_to_monster(
-                    &player,
-                    &monster))
+                engaged_monster >= 0 &&
+                engaged_monster < JOURNEY_MAX_MONSTERS)
             {
-                journey_encounter_monster_turn(
-                    &character,
-                    &monster
-                );
+                JourneyMonster *monster =
+                    &monsters[engaged_monster];
+
+                if (monster->health > 0 &&
+                    journey_player_is_adjacent_to_monster(
+                        &player,
+                        monster))
+                {
+                    journey_encounter_monster_turn(
+                        &character,
+                        monster
+                    );
+                }
             }
 
-			/*
-			 * Attack an adjacent monster when E is pressed.
-			 */
-            if (monster_engaged &&
-                !journey_player_is_adjacent_to_monster(
-                    &player,
-                    &monster))
+            /*
+             * Moving away from the engaged monster
+             * cleanly ends the engagement.
+             */
+            if (engaged_monster >= 0 &&
+                engaged_monster < JOURNEY_MAX_MONSTERS)
             {
-                monster_engaged = false;
+                JourneyMonster *monster =
+                    &monsters[engaged_monster];
+
+                if (monster->health <= 0 ||
+                    !journey_player_is_adjacent_to_monster(
+                        &player,
+                        monster))
+                {
+                    engaged_monster = -1;
+                }
             }
 
-			if (location == JOURNEY_LOCATION_OVERWORLD &&
-				input.interact)
-			{
-				if (monster.health > 0)
-				{
-					const int old_health = monster.health;
+            /*
+             * Attack an adjacent monster when E is pressed.
+             */
+            if (location == JOURNEY_LOCATION_OVERWORLD &&
+                input.interact)
+            {
+                int target_monster = -1;
 
-                    monster_engaged = true;
+                for (int i = 0;
+                     i < JOURNEY_MAX_MONSTERS;
+                     ++i)
+                {
+                    if (monsters[i].health > 0 &&
+                        journey_player_is_adjacent_to_monster(
+                            &player,
+                            &monsters[i]))
+                    {
+                        target_monster = i;
+                        break;
+                    }
+                }
+
+                if (target_monster >= 0)
+                {
+                    JourneyMonster *monster =
+                        &monsters[target_monster];
+
+                    engaged_monster = target_monster;
+
+                    const int old_health =
+                        monster->health;
 
                     journey_encounter_fight(
                         &player,
                         &character,
-                        &monster
+                        monster
                     );
 
-					if (monster.health == 0 &&
-						old_health > 0)
-					{
-						const int experience =
-						    monster.definition->experience;
+                    if (monster->health == 0 &&
+                        old_health > 0)
+                    {
+                        const int experience =
+                            monster->definition->experience;
 
-						const int copper_range =
-						    monster.definition->copper_max -
-						    monster.definition->copper_min + 1;
+                        const int copper_range =
+                            monster->definition->copper_max -
+                            monster->definition->copper_min + 1;
 
-						const int copper =
-							monster.definition->copper_min +
-							SDL_rand(copper_range);
+                        const int copper =
+                            monster->definition->copper_min +
+                            SDL_rand(copper_range);
 
-						const bool leveled_up =
-							journey_character_add_experience(
-								&character,
-								experience
-							);
+                        const bool leveled_up =
+                            journey_character_add_experience(
+                                &character,
+                                experience
+                            );
 
-						journey_character_add_copper(
-						    &character,
-						    copper
-						);
+                        journey_character_add_copper(
+                            &character,
+                            copper
+                        );
 
-						if (leveled_up)
-						{
-							SDL_Log(
-								"You reached level %d! Max health is now %d.",
-								character.level,
-								character.max_health
-							);
-						}
+                        engaged_monster = -1;
 
-						SDL_Log(
-						    "%s defeated! "
-						    "You gain %d experience and %d copper. "
-						    "Total XP: %d  Copper: %d",
-						    monster.definition->name,
-						    experience,
-						    copper,
-						    character.experience,
-						    character.copper
-						);
-					}
-				}
-			}
+                        if (leveled_up)
+                        {
+                            SDL_Log(
+                                "You reached level %d! Max health is now %d.",
+                                character.level,
+                                character.max_health
+                            );
+                        }
+
+                        SDL_Log(
+                            "%s defeated! "
+                            "You gain %d experience and %d copper. "
+                            "Total XP: %d  Copper: %d",
+                            monster->definition->name,
+                            experience,
+                            copper,
+                            character.experience,
+                            character.copper
+                        );
+                    }
+                }
+            }
 
             /*
              * Enter the dungeon when E is pressed
@@ -588,15 +639,23 @@ int main(void)
                 );
             }
 
-			if (location == JOURNEY_LOCATION_OVERWORLD &&
-				monster.health > 0)
-			{
-				journey_renderer_draw_monster(
-					&renderer,
-					&monster,
-					&camera
-				);
-			}
+            if (location == JOURNEY_LOCATION_OVERWORLD)
+            {
+                for (int i = 0;
+                     i < JOURNEY_MAX_MONSTERS;
+                     ++i)
+                {
+                    if (monsters[i].definition != NULL &&
+                        monsters[i].health > 0)
+                    {
+                        journey_renderer_draw_monster(
+                            &renderer,
+                            &monsters[i],
+                            &camera
+                        );
+                    }
+                }
+            }
 
             journey_renderer_draw_player(
                 &renderer,

@@ -1,5 +1,6 @@
 #ifndef JOURNEY_MONSTER_H
 #define JOURNEY_MONSTER_H
+#define JOURNEY_MAX_MONSTERS 4
 
 typedef enum
 {

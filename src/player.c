@@ -22,7 +22,7 @@ static bool journey_player_tile_occupied_by_monster(
 static bool journey_player_try_move(
     JourneyPlayer *player,
     const JourneyMap *map,
-    const JourneyMonster *monster,
+	const JourneyMonster monsters[JOURNEY_MAX_MONSTERS],
     int dx,
     int dy
 )
@@ -43,13 +43,16 @@ static bool journey_player_try_move(
         return false;
     }
 
-    if (journey_player_tile_occupied_by_monster(
-            new_x,
-            new_y,
-            monster))
-    {
-        return false;
-    }
+	for (int i = 0; i < JOURNEY_MAX_MONSTERS; ++i)
+	{
+		if (journey_player_tile_occupied_by_monster(
+		        new_x,
+		        new_y,
+		        &monsters[i]))
+		{
+		    return false;
+		}
+	}
 
     player->x = new_x;
     player->y = new_y;
@@ -102,13 +105,13 @@ void journey_player_init(
 bool journey_player_move_up(
     JourneyPlayer *player,
     const JourneyMap *map,
-    const JourneyMonster *monster
+    const JourneyMonster monsters[JOURNEY_MAX_MONSTERS]
 )
 {
     return journey_player_try_move(
         player,
         map,
-        monster,
+        monsters,
         0,
         -1
     );
@@ -117,13 +120,13 @@ bool journey_player_move_up(
 bool journey_player_move_down(
     JourneyPlayer *player,
     const JourneyMap *map,
-    const JourneyMonster *monster
+    const JourneyMonster monsters[JOURNEY_MAX_MONSTERS]
 )
 {
     return journey_player_try_move(
         player,
         map,
-        monster,
+        monsters,
         0,
         1
     );
@@ -132,13 +135,13 @@ bool journey_player_move_down(
 bool journey_player_move_left(
     JourneyPlayer *player,
     const JourneyMap *map,
-    const JourneyMonster *monster
+    const JourneyMonster monsters[JOURNEY_MAX_MONSTERS]
 )
 {
     return journey_player_try_move(
         player,
         map,
-        monster,
+        monsters,
         -1,
         0
     );
@@ -147,13 +150,13 @@ bool journey_player_move_left(
 bool journey_player_move_right(
     JourneyPlayer *player,
     const JourneyMap *map,
-    const JourneyMonster *monster
+    const JourneyMonster monsters[JOURNEY_MAX_MONSTERS]
 )
 {
     return journey_player_try_move(
         player,
         map,
-        monster,
+        monsters,
         1,
         0
     );
