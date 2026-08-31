@@ -18,25 +18,25 @@ void journey_player_init(
     const JourneyMap *map
 );
 
-void journey_player_move_up(
+bool journey_player_move_up(
     JourneyPlayer *player,
     const JourneyMap *map,
     const JourneyMonster *monster
 );
 
-void journey_player_move_down(
+bool journey_player_move_down(
     JourneyPlayer *player,
     const JourneyMap *map,
     const JourneyMonster *monster
 );
 
-void journey_player_move_left(
+bool journey_player_move_left(
     JourneyPlayer *player,
     const JourneyMap *map,
     const JourneyMonster *monster
 );
 
-void journey_player_move_right(
+bool journey_player_move_right(
     JourneyPlayer *player,
     const JourneyMap *map,
     const JourneyMonster *monster

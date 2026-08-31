@@ -253,41 +253,38 @@ int main(void)
              */
             if (location == JOURNEY_LOCATION_OVERWORLD)
             {
-				if (input.move_up)
-				{
-					journey_player_move_up(
-						&player,
-						&map,
-						&monster
-					);
-				}
-
-				if (input.move_down)
-				{
-					journey_player_move_down(
-						&player,
-						&map,
-						&monster
-					);
-				}
-
-				if (input.move_left)
-				{
-					journey_player_move_left(
-						&player,
-						&map,
-						&monster
-					);
-				}
-
-				if (input.move_right)
-				{
-					journey_player_move_right(
-						&player,
-						&map,
-						&monster
-					);
-				}
+                if (input.move_up)
+                {
+                    journey_player_move_up(
+                        &player,
+                        &map,
+                        &monster
+                    );
+                }
+                else if (input.move_down)
+                {
+                    journey_player_move_down(
+                        &player,
+                        &map,
+                        &monster
+                    );
+                }
+                else if (input.move_left)
+                {
+                    journey_player_move_left(
+                        &player,
+                        &map,
+                        &monster
+                    );
+                }
+                else if (input.move_right)
+                {
+                    journey_player_move_right(
+                        &player,
+                        &map,
+                        &monster
+                    );
+                }
             }
             else if (location == JOURNEY_LOCATION_DUNGEON)
             {

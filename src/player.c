@@ -19,7 +19,7 @@ static bool journey_player_tile_occupied_by_monster(
            monster->y == y;
 }
 
-static void journey_player_try_move(
+static bool journey_player_try_move(
     JourneyPlayer *player,
     const JourneyMap *map,
     const JourneyMonster *monster,
@@ -29,7 +29,7 @@ static void journey_player_try_move(
 {
     if (player == NULL || map == NULL)
     {
-        return;
+        return false;
     }
 
     const int new_x = player->x + dx;
@@ -40,7 +40,7 @@ static void journey_player_try_move(
             new_x,
             new_y))
     {
-        return;
+        return false;
     }
 
     if (journey_player_tile_occupied_by_monster(
@@ -48,11 +48,13 @@ static void journey_player_try_move(
             new_y,
             monster))
     {
-        return;
+        return false;
     }
 
     player->x = new_x;
     player->y = new_y;
+
+    return true;
 }
 
 static void journey_player_try_move_dungeon(
@@ -97,13 +99,13 @@ void journey_player_init(
     player->y = 34;
 }
 
-void journey_player_move_up(
+bool journey_player_move_up(
     JourneyPlayer *player,
     const JourneyMap *map,
     const JourneyMonster *monster
 )
 {
-    journey_player_try_move(
+    return journey_player_try_move(
         player,
         map,
         monster,
@@ -112,13 +114,13 @@ void journey_player_move_up(
     );
 }
 
-void journey_player_move_down(
+bool journey_player_move_down(
     JourneyPlayer *player,
     const JourneyMap *map,
     const JourneyMonster *monster
 )
 {
-    journey_player_try_move(
+    return journey_player_try_move(
         player,
         map,
         monster,
@@ -127,13 +129,13 @@ void journey_player_move_down(
     );
 }
 
-void journey_player_move_left(
+bool journey_player_move_left(
     JourneyPlayer *player,
     const JourneyMap *map,
     const JourneyMonster *monster
 )
 {
-    journey_player_try_move(
+    return journey_player_try_move(
         player,
         map,
         monster,
@@ -142,13 +144,13 @@ void journey_player_move_left(
     );
 }
 
-void journey_player_move_right(
+bool journey_player_move_right(
     JourneyPlayer *player,
     const JourneyMap *map,
     const JourneyMonster *monster
 )
 {
-    journey_player_try_move(
+    return journey_player_try_move(
         player,
         map,
         monster,
