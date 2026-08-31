@@ -26,6 +26,7 @@ add_executable(journey
     src/character.c
     src/monster.c
     src/item.c
+    src/encounter.c
 )
 
 target_link_libraries(journey

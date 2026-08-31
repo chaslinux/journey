@@ -7,6 +7,7 @@
 #include "dungeon.h"
 #include "game.h"
 #include "input.h"
+#include "encounter.h"
 #include "map.h"
 #include "monster.h"
 #include "player.h"
@@ -333,42 +334,11 @@ int main(void)
 				{
 					const int old_health = monster.health;
 
-					journey_player_attack_monster(
-						&player,
-						&monster
-					);
-
-					if (monster.health != old_health)
-					{
-						SDL_Log(
-						    "You attack the %s for %d damage. "
-						    "Health: %d/%d",
-						    monster.definition->name,
-						    old_health - monster.health,
-						    monster.health,
-						    monster.definition->max_health
-						);
-					}
-
-                    if (monster.health > 0)
-                    {
-                        const int monster_damage =
-                            monster.definition->damage;
-
-                        journey_character_take_damage(
-                            &character,
-                            monster_damage
-                        );
-
-                        SDL_Log(
-                            "The %s attacks you for %d damage. "
-                            "Health: %d/%d",
-                            monster.definition->name,
-                            monster_damage,
-                            character.health,
-                            character.max_health
-                        );
-                    }
+                    journey_encounter_fight(
+                        &player,
+                        &character,
+                        &monster
+                    );
 
 					if (monster.health == 0 &&
 						old_health > 0)
