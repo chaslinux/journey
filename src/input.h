@@ -15,6 +15,7 @@ typedef struct
     bool move_right;
 
     bool interact;
+    bool use_item;
 } JourneyInput;
 
 void journey_input_init(JourneyInput *input);

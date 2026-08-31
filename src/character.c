@@ -161,6 +161,59 @@ bool journey_character_add_item(
     return true;
 }
 
+bool journey_character_use_healing_potion(
+    JourneyCharacter *character
+)
+{
+    if (character == NULL)
+    {
+        return false;
+    }
+
+    if (character->health >= character->max_health)
+    {
+        return false;
+    }
+
+    for (int i = 0; i < character->inventory_count; ++i)
+    {
+        const JourneyItemDefinition *item =
+            character->inventory[i];
+
+        if (item != NULL &&
+            item->type == JOURNEY_ITEM_HEALING_POTION)
+        {
+            const int old_health = character->health;
+            const int healing = 20;
+
+            character->health += healing;
+
+            if (character->health > character->max_health)
+            {
+                character->health = character->max_health;
+            }
+
+            for (int j = i;
+                 j < character->inventory_count - 1;
+                 ++j)
+            {
+                character->inventory[j] =
+                    character->inventory[j + 1];
+            }
+
+            character->inventory[
+                character->inventory_count - 1
+            ] = NULL;
+
+            character->inventory_count--;
+
+            return character->health != old_health;
+        }
+    }
+
+    return false;
+}
+
 int journey_character_get_item_count(
     const JourneyCharacter *character
 )

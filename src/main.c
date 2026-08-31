@@ -217,6 +217,37 @@ int main(void)
             const int old_y = player.y;
 
             /*
+             * Use a Healing Potion when I is pressed.
+             */
+            if (input.use_item)
+            {
+                const int old_health = character.health;
+
+                if (journey_character_use_healing_potion(
+                        &character))
+                {
+                    SDL_Log(
+                        "You use a Healing Potion. "
+                        "Health: %d/%d",
+                        character.health,
+                        character.max_health
+                    );
+                }
+                else if (old_health >= character.max_health)
+                {
+                    SDL_Log(
+                        "You are already at full health."
+                    );
+                }
+                else
+                {
+                    SDL_Log(
+                        "You do not have a Healing Potion."
+                    );
+                }
+            }
+
+            /*
              * Movement depends on the current location.
              */
             if (location == JOURNEY_LOCATION_OVERWORLD)

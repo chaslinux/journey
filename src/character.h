@@ -66,6 +66,10 @@ bool journey_character_add_item(
     const JourneyItemDefinition *item
 );
 
+bool journey_character_use_healing_potion(
+    JourneyCharacter *character
+);
+
 int journey_character_get_item_count(
     const JourneyCharacter *character
 );

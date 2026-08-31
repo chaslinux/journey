@@ -15,6 +15,7 @@ void journey_input_init(JourneyInput *input)
     input->move_left = false;
     input->move_right = false;
     input->interact = false;
+    input->use_item = false;
 }
 
 void journey_input_process_event(
@@ -71,6 +72,10 @@ void journey_input_process_event(
 
         case SDL_SCANCODE_ESCAPE:
             input->quit = true;
+            break;
+
+        case SDL_SCANCODE_I:
+            input->use_item = true;
             break;
 
         default:
