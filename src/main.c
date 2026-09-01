@@ -86,21 +86,8 @@ int main(void)
 
     JourneyCharacter character = {0};
 
-	JourneyMonster monsters[JOURNEY_MAX_MONSTERS] = {0};
-
-	journey_monster_init(
-		&monsters[0],
-		&JOURNEY_MONSTER_SKELETAL_RAT,
-		75,
-		34
-	);
-
-	journey_monster_init(
-		&monsters[1],
-		&JOURNEY_MONSTER_SKELETAL_RAT,
-		80,
-		34
-	);
+    JourneyMonster monsters[JOURNEY_MAX_MONSTERS] = {0};
+    journey_monster_spawn_overworld(monsters);
 
     JourneyDungeon dungeon = {0};
     journey_dungeon_init(&dungeon);

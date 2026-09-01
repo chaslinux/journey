@@ -55,6 +55,10 @@ void journey_monster_init(
     int y
 );
 
+void journey_monster_spawn_overworld(
+    JourneyMonster monsters[JOURNEY_MAX_MONSTERS]
+);
+
 void journey_monster_take_damage(
     JourneyMonster *monster,
     int damage

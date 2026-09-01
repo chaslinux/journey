@@ -42,6 +42,30 @@ void journey_monster_init(
     monster->y = y;
 }
 
+void journey_monster_spawn_overworld(
+    JourneyMonster monsters[JOURNEY_MAX_MONSTERS]
+)
+{
+    if (monsters == NULL)
+    {
+        return;
+    }
+
+    journey_monster_init(
+        &monsters[0],
+        &JOURNEY_MONSTER_SKELETAL_RAT,
+        75,
+        34
+    );
+
+    journey_monster_init(
+        &monsters[1],
+        &JOURNEY_MONSTER_SKELETAL_RAT,
+        80,
+        34
+    );
+}
+
 void journey_monster_take_damage(
     JourneyMonster *monster,
     int damage
