@@ -108,7 +108,7 @@ int main(void)
         JOURNEY_CLASS_WARRIOR;
 
     bool running = true;
-    int engaged_monster = -1;
+	JourneyEncounter encounter = {0};
 
     while (running)
     {
@@ -322,44 +322,45 @@ int main(void)
              * the player moves, as long as the player
              * remains adjacent.
              */
-            if (location == JOURNEY_LOCATION_OVERWORLD &&
-                moved &&
-                engaged_monster >= 0 &&
-                engaged_monster < JOURNEY_MAX_MONSTERS)
-            {
-                JourneyMonster *monster =
-                    &monsters[engaged_monster];
+			if (location == JOURNEY_LOCATION_OVERWORLD &&
+				moved &&
+				encounter.active &&
+				encounter.monster != NULL)
+			{
+				JourneyMonster *monster =
+					encounter.monster;
 
-                if (monster->health > 0 &&
-                    journey_player_is_adjacent_to_monster(
-                        &player,
-                        monster))
-                {
-                    journey_encounter_monster_turn(
-                        &character,
-                        monster
-                    );
-                }
-            }
+				if (monster->health > 0 &&
+					journey_player_is_adjacent_to_monster(
+						&player,
+						monster))
+				{
+					journey_encounter_monster_turn(
+						&character,
+						monster
+					);
+				}
+			}
 
             /*
              * Moving away from the engaged monster
              * cleanly ends the engagement.
              */
-            if (engaged_monster >= 0 &&
-                engaged_monster < JOURNEY_MAX_MONSTERS)
-            {
-                JourneyMonster *monster =
-                    &monsters[engaged_monster];
+			if (encounter.active &&
+				encounter.monster != NULL)
+			{
+				JourneyMonster *monster =
+					encounter.monster;
 
-                if (monster->health <= 0 ||
-                    !journey_player_is_adjacent_to_monster(
-                        &player,
-                        monster))
-                {
-                    engaged_monster = -1;
-                }
-            }
+				if (monster->health <= 0 ||
+					!journey_player_is_adjacent_to_monster(
+						&player,
+						monster))
+				{
+					encounter.active = false;
+					encounter.monster = NULL;
+				}
+			}
 
             /*
              * Attack an adjacent monster when E is pressed.
@@ -375,11 +376,11 @@ int main(void)
 
 					if (monster != NULL)
 					{
-						engaged_monster =
-							(int)(monster - monsters);
+						encounter.active = true;
+						encounter.monster = monster;
 
-                    const int old_health =
-                        monster->health;
+						const int old_health =
+							monster->health;
 
                     journey_encounter_fight(
                         &player,
@@ -412,7 +413,8 @@ int main(void)
                             copper
                         );
 
-                        engaged_monster = -1;
+						encounter.active = false;
+						encounter.monster = NULL;
 
                         if (leveled_up)
                         {

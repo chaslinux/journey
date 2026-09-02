@@ -1,9 +1,17 @@
 #ifndef JOURNEY_ENCOUNTER_H
 #define JOURNEY_ENCOUNTER_H
 
+#include <stdbool.h>
+
 #include "character.h"
 #include "monster.h"
 #include "player.h"
+
+typedef struct
+{
+    bool active;
+    JourneyMonster *monster;
+} JourneyEncounter;
 
 JourneyMonster *journey_encounter_find_target(
     const JourneyPlayer *player,
