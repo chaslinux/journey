@@ -29,4 +29,13 @@ void journey_encounter_monster_turn(
     const JourneyMonster *monster
 );
 
+void journey_encounter_start(
+    JourneyEncounter *encounter,
+    JourneyMonster *monster
+);
+
+void journey_encounter_end(
+    JourneyEncounter *encounter
+);
+
 #endif

@@ -103,3 +103,33 @@ void journey_encounter_fight(
     }
 }
 
+void journey_encounter_start(
+    JourneyEncounter *encounter,
+    JourneyMonster *monster
+)
+{
+    if (encounter == NULL ||
+        monster == NULL ||
+        monster->definition == NULL ||
+        monster->health <= 0)
+    {
+        return;
+    }
+
+    encounter->active = true;
+    encounter->monster = monster;
+}
+
+void journey_encounter_end(
+    JourneyEncounter *encounter
+)
+{
+    if (encounter == NULL)
+    {
+        return;
+    }
+
+    encounter->active = false;
+    encounter->monster = NULL;
+}
+

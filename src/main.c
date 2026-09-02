@@ -376,8 +376,10 @@ int main(void)
 
 					if (monster != NULL)
 					{
-						encounter.active = true;
-						encounter.monster = monster;
+                        journey_encounter_start(
+                            &encounter,
+                            monster
+                        );
 
 						const int old_health =
 							monster->health;
@@ -413,8 +415,9 @@ int main(void)
                             copper
                         );
 
-						encounter.active = false;
-						encounter.monster = NULL;
+                        journey_encounter_end(
+                            &encounter
+                        );
 
                         if (leveled_up)
                         {
