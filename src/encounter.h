@@ -5,6 +5,11 @@
 #include "monster.h"
 #include "player.h"
 
+JourneyMonster *journey_encounter_find_target(
+    const JourneyPlayer *player,
+    JourneyMonster monsters[JOURNEY_MAX_MONSTERS]
+);
+
 void journey_encounter_fight(
     JourneyPlayer *player,
     JourneyCharacter *character,

@@ -367,28 +367,16 @@ int main(void)
             if (location == JOURNEY_LOCATION_OVERWORLD &&
                 input.interact)
             {
-                int target_monster = -1;
+					JourneyMonster *monster =
+						journey_encounter_find_target(
+							&player,
+							monsters
+						);
 
-                for (int i = 0;
-                     i < JOURNEY_MAX_MONSTERS;
-                     ++i)
-                {
-                    if (monsters[i].health > 0 &&
-                        journey_player_is_adjacent_to_monster(
-                            &player,
-                            &monsters[i]))
-                    {
-                        target_monster = i;
-                        break;
-                    }
-                }
-
-                if (target_monster >= 0)
-                {
-                    JourneyMonster *monster =
-                        &monsters[target_monster];
-
-                    engaged_monster = target_monster;
+					if (monster != NULL)
+					{
+						engaged_monster =
+							(int)(monster - monsters);
 
                     const int old_health =
                         monster->health;

@@ -3,6 +3,32 @@
 
 #include "encounter.h"
 
+JourneyMonster *journey_encounter_find_target(
+    const JourneyPlayer *player,
+    JourneyMonster monsters[JOURNEY_MAX_MONSTERS]
+)
+{
+    if (player == NULL || monsters == NULL)
+    {
+        return NULL;
+    }
+
+    for (int i = 0;
+         i < JOURNEY_MAX_MONSTERS;
+         ++i)
+    {
+        if (monsters[i].health > 0 &&
+            journey_player_is_adjacent_to_monster(
+                player,
+                &monsters[i]))
+        {
+            return &monsters[i];
+        }
+    }
+
+    return NULL;
+}
+
 void journey_encounter_monster_turn(
     JourneyCharacter *character,
     const JourneyMonster *monster
